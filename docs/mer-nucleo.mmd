@@ -1,0 +1,64 @@
+erDiagram
+    customers ||--o{ sales_quotes : "recibe"
+    customers ||--o{ sales_orders : "compra"
+    employees ||--o{ sales_quotes : "vendedor"
+    sales_quotes |o--o{ sales_orders : "se convierte en"
+    sales_quotes ||--|{ sales_quote_lines : "detalla"
+    sales_orders ||--|{ sales_order_lines : "detalla"
+    products ||--o{ price_list_items : "tiene precio"
+    price_lists ||--|{ price_list_items : "contiene"
+    products ||--o{ sales_quote_lines : "cotizado"
+    products ||--o{ sales_order_lines : "vendido"
+    lost_reasons |o--o{ sales_quotes : "explica pérdida"
+    sales_quotes |o--o{ discount_approvals : "requiere"
+    employees |o--o{ discount_approvals : "decide"
+
+    customers {
+        int customer_id PK
+        varchar tax_id "RUT"
+        decimal credit_limit
+    }
+    employees {
+        int employee_id PK
+    }
+    products {
+        int product_id PK
+        decimal standard_cost
+    }
+    price_lists {
+        int price_list_id PK
+    }
+    price_list_items {
+        int product_id FK
+        decimal unit_price
+    }
+    sales_quotes {
+        int quote_id PK
+        varchar status
+    }
+    sales_quote_lines {
+        int quantity
+        decimal discount_pct
+    }
+    sales_orders {
+        int sales_order_id PK
+        decimal total_amount
+    }
+    sales_order_lines {
+        int quantity
+        decimal line_total
+    }
+    lost_reasons {
+        varchar reason_name
+    }
+    discount_approvals {
+        decimal discount_pct
+        varchar decision
+    }
+
+    classDef externo fill:#eef2f7,stroke:#64748b,color:#334155
+    classDef base fill:#e6f4f1,stroke:#0f766e,color:#0f2a27
+    classDef nuevo fill:#fff4e0,stroke:#d97706,color:#7c2d12
+    class employees,products externo
+    class customers,price_lists,price_list_items,sales_quotes,sales_quote_lines,sales_orders,sales_order_lines base
+    class lost_reasons,discount_approvals nuevo

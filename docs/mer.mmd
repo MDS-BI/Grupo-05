@@ -1,0 +1,209 @@
+erDiagram
+    %% ===== Datos maestros de otros módulos (solo se referencian) =====
+    addresses ||--o{ customers : "ubica"
+    employees ||--o{ customers : "ejecutivo asignado"
+    employees ||--o{ sales_quotes : "vendedor"
+    employees ||--o{ sales_orders : "vendedor"
+    employees ||--o{ discount_approvals : "solicita"
+    employees |o--o{ discount_approvals : "decide"
+    opportunities |o--o{ sales_quotes : "origina"
+    opportunities |o--o{ sales_orders : "origina"
+    currencies ||--o{ price_lists : "expresa"
+    currencies ||--o{ sales_quotes : "moneda"
+    currencies ||--o{ sales_orders : "moneda"
+    tax_codes ||--o{ sales_order_lines : "grava"
+
+    %% ===== Clientes (Entidad del template) =====
+    customers ||--o{ opportunities : "tiene"
+    customers ||--o{ sales_quotes : "recibe"
+    customers ||--o{ sales_orders : "compra"
+    customers ||--o{ returns_rma : "devuelve"
+
+    %% ===== Precios =====
+    price_lists ||--|{ price_list_items : "contiene"
+    products ||--o{ price_list_items : "tiene precio"
+    price_lists ||--o{ sales_quotes : "usa"
+    price_lists ||--o{ sales_orders : "usa"
+
+    %% ===== Cotización -> Pedido (Documento del template) =====
+    sales_quotes ||--|{ sales_quote_lines : "detalla"
+    products ||--o{ sales_quote_lines : "cotizado"
+    lost_reasons |o--o{ sales_quotes : "explica pérdida"
+    sales_quotes |o--o{ sales_orders : "se convierte en"
+    sales_orders ||--|{ sales_order_lines : "detalla"
+    products ||--o{ sales_order_lines : "vendido"
+    sales_quotes |o--o{ discount_approvals : "requiere"
+    sales_orders |o--o{ discount_approvals : "hereda"
+
+    %% ===== Devoluciones =====
+    sales_orders ||--o{ returns_rma : "origina"
+    returns_rma ||--|{ rma_lines : "detalla"
+    products ||--o{ rma_lines : "devuelto"
+
+    %% ===== Hacia otros módulos (fuera del MVP) =====
+    sales_orders ||--o{ shipments : "Logística despacha"
+    sales_orders ||--o{ ar_invoices : "Finanzas factura"
+
+    customers {
+        int customer_id PK
+        int address_id FK
+        int assigned_employee_id FK
+        varchar customer_code "nuevo"
+        varchar customer_name
+        varchar tax_id "RUT, nuevo"
+        varchar email
+        varchar phone
+        varchar segment "nuevo"
+        decimal credit_limit "nuevo"
+        varchar payment_terms "nuevo"
+        date next_contact_date "nuevo"
+        text notes "nuevo"
+        date customer_since
+    }
+    products {
+        int product_id PK
+        varchar sku
+        varchar product_name
+        decimal standard_cost
+    }
+    employees {
+        int employee_id PK
+        varchar first_name
+        varchar last_name
+    }
+    opportunities {
+        int opportunity_id PK
+        int customer_id FK
+        decimal estimated_value
+    }
+    addresses {
+        int address_id PK
+        varchar city
+    }
+    currencies {
+        varchar currency_code PK
+        varchar symbol
+    }
+    tax_codes {
+        int tax_code_id PK
+        varchar tax_name
+        decimal tax_rate
+    }
+    price_lists {
+        int price_list_id PK
+        varchar currency_code FK
+        varchar price_list_name
+        date valid_from
+        date valid_to
+    }
+    price_list_items {
+        int price_list_item_id PK
+        int price_list_id FK
+        int product_id FK
+        decimal unit_price
+    }
+    sales_quotes {
+        int quote_id PK
+        int customer_id FK
+        int opportunity_id FK "opcional"
+        int employee_id FK
+        int price_list_id FK "nuevo"
+        int lost_reason_id FK "nuevo, si perdida"
+        varchar currency_code FK "nuevo"
+        varchar series "nuevo, UNIQUE con folio"
+        int folio "nuevo"
+        date quote_date
+        date expiry_date
+        varchar payment_terms "nuevo"
+        varchar status "cotización, enviada, aceptada, perdida, anulada"
+        decimal subtotal "nuevo"
+        decimal discount "nuevo"
+        decimal tax_amount "nuevo"
+        decimal total_amount "nuevo"
+        text notes "nuevo"
+    }
+    sales_quote_lines {
+        int quote_line_id PK
+        int quote_id FK
+        int product_id FK
+        int quantity "entero"
+        decimal unit_price
+        decimal discount_pct "nuevo"
+        decimal line_total "nuevo"
+    }
+    lost_reasons {
+        int lost_reason_id PK
+        varchar reason_name "precio, plazo, sin stock, competencia, otro"
+    }
+    sales_orders {
+        int sales_order_id PK
+        int customer_id FK
+        int employee_id FK
+        int opportunity_id FK "opcional"
+        int quote_id FK "opcional"
+        int price_list_id FK "nuevo"
+        varchar currency_code FK "nuevo"
+        varchar series "nuevo, UNIQUE con folio"
+        int folio "nuevo"
+        date order_date
+        date delivery_date "nuevo"
+        varchar payment_terms "nuevo"
+        varchar status "confirmado, despachado, facturado, anulado"
+        decimal subtotal "nuevo"
+        decimal discount "nuevo"
+        decimal tax_amount "nuevo"
+        decimal total_amount
+        text notes "nuevo"
+    }
+    sales_order_lines {
+        int sales_order_line_id PK
+        int sales_order_id FK
+        int product_id FK
+        int tax_code_id FK "nuevo"
+        int quantity "entero"
+        decimal unit_price
+        decimal discount_pct "nuevo"
+        decimal line_total "nuevo"
+    }
+    discount_approvals {
+        int approval_id PK
+        int quote_id FK
+        int sales_order_id FK "al confirmarse"
+        int requested_by FK "vendedor"
+        int approved_by FK "jefe, vacío si pendiente"
+        decimal discount_pct
+        varchar reason "obligatorio"
+        varchar decision "pendiente, aprobado, rechazado"
+        datetime requested_at
+        datetime decided_at
+    }
+    returns_rma {
+        int rma_id PK
+        int sales_order_id FK
+        int customer_id FK
+        date rma_date
+        varchar reason
+        varchar status
+    }
+    rma_lines {
+        int rma_line_id PK
+        int rma_id FK
+        int product_id FK
+        int quantity "entero"
+    }
+    shipments {
+        int shipment_id PK
+        int sales_order_id FK
+    }
+    ar_invoices {
+        int ar_invoice_id PK
+        int sales_order_id FK
+    }
+
+    %% ===== Colores: origen de cada tabla =====
+    classDef externo fill:#eef2f7,stroke:#64748b,color:#334155
+    classDef base fill:#e6f4f1,stroke:#0f766e,color:#0f2a27
+    classDef nuevo fill:#fff4e0,stroke:#d97706,color:#7c2d12
+    class employees,addresses,currencies,tax_codes,products,opportunities,shipments,ar_invoices externo
+    class customers,price_lists,price_list_items,sales_quotes,sales_quote_lines,sales_orders,sales_order_lines,returns_rma,rma_lines base
+    class lost_reasons,discount_approvals nuevo
