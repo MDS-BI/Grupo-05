@@ -98,10 +98,12 @@ describe('module-config', () => {
     expect(config.statusLifecycle).toBeNull();
   });
 
-  it('loadModuleConfig reflects the userConfig slot (null by default)', async () => {
+  it('loadModuleConfig reflects the userConfig slot (perfil de Ventas del Grupo 5)', async () => {
     const { config, errors } = await loadModuleConfig();
     expect(errors).toEqual([]);
-    expect(config.moduleName).toBe(DEFAULT_CONFIG.moduleName);
+    expect(config.moduleName).toBe('Ventas');
+    expect(config.labels.entity).toBe('Cliente');
+    expect(config.sales.taxRate).toBe(0.19);
   });
 
   it('exposes active config and label helpers after setActiveConfig', () => {
