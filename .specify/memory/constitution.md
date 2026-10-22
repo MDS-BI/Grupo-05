@@ -1,14 +1,15 @@
 <!--
 Sync Impact Report
-- Version change: Template → 1.0.0
-- Modified principles: Added four principles for code quality, testing standards, user experience consistency, and performance requirements.
+- Version change: 1.0.0 → 1.1.0 (Grupo 5, 2026-10-13)
+- Added principles: V. Privacidad y sesgos de datos
+- Previous change: Template → 1.0.0 (four principles: code quality, testing, UX consistency, performance)
 - Added sections: Quality Standards, Development Workflow
 - Removed sections: None
 - Templates requiring updates: ✅ .specify/templates/plan-template.md, ✅ .specify/templates/spec-template.md, ✅ .specify/templates/tasks-template.md
 - Follow-up TODOs: None
 -->
 
-# My Project Constitution
+# Constitución del Proyecto · Grupo 5 · Módulo de Ventas
 
 ## Core Principles
 
@@ -24,6 +25,9 @@ Product changes MUST preserve a consistent experience across screens, states, an
 ### IV. Performance & Reliability
 Features MUST meet the performance budgets defined for the project and remain responsive under expected usage. Critical paths MUST avoid unnecessary round-trips, blocking work, and avoidable re-rendering or computation. When trade-offs are required, they MUST be justified with evidence from profiling, load expectations, or user impact.
 
+### V. Privacidad y sesgos de datos
+El módulo MUST tratar los datos de clientes según la Ley 19.628 (y la Ley 21.719 cuando entre en vigencia): solo se guardan los datos necesarios para vender, cobrar y despachar, y los datos de demostración MUST ser ficticios. La información sensible para el negocio (margen, costo) MUST mostrarse solo al perfil que la necesita. Las reglas automáticas que afectan a un cliente (crédito, descuentos) MUST basarse en su comportamiento comercial y nunca en atributos personales o de ubicación. El sistema MUST registrar también lo que no ocurrió (cotizaciones perdidas con su motivo) y las excepciones (aprobaciones de descuento con quién y cuándo), para que los indicadores no sufran sesgo de supervivencia ni oculten decisiones. Cada nueva funcionalidad MUST incluir en su plan una revisión de riesgos de datos y sesgos (ver `docs/riesgos-y-sesgos.md`).
+
 ## Quality Standards
 The team MUST use linting, formatting, and static analysis tooling for the codebase, and unresolved warnings that affect correctness or maintainability MUST be addressed before release. Documentation MUST be updated when behavior, configuration, or public contracts change. Complex or risky changes MUST include a brief rationale in the implementation plan or pull request.
 
@@ -33,4 +37,4 @@ Every change MUST follow a small, reviewable increment with clear acceptance cri
 ## Governance
 This constitution supersedes ad-hoc quality expectations for this project. Amendments require a documented rationale, updates to affected templates and plans, and review by the maintainers before adoption. Compliance is reviewed during planning, implementation review, and release readiness; deviations MUST be explicitly justified and tracked.
 
-**Version**: 1.0.0 | **Ratified**: 2026-07-08 | **Last Amended**: 2026-07-08
+**Version**: 1.1.0 | **Ratified**: 2026-07-08 | **Last Amended**: 2026-10-13
