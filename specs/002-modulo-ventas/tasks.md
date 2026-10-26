@@ -89,7 +89,7 @@
 
 ## Fase 11: Avance para la revisión del 22 de octubre
 
-- [X] T044 `plan.md` en la raíz: módulo, usuarios, funcionalidades, compatibilidad con el ERP, análisis, riesgos, escalabilidad, roles y cronograma
+- [X] T044 `plan.md` en la raíz (el 26 de octubre, por el feedback, se repartió entre `specs/002-modulo-ventas/plan.md` y `docs/plan-de-trabajo.md`): módulo, usuarios, funcionalidades, compatibilidad con el ERP, análisis, riesgos, escalabilidad, roles y cronograma
 - [X] T045 MER con colores por origen (base, nuevo, otro módulo) y estados alineados con la app
 - [X] T046 `data-model.md`: sección de compatibilidad con la estructura base, normalización (3FN) e historias → tablas
 - [X] T047 README con módulo asignado, integrantes y propósito

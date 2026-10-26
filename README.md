@@ -23,12 +23,13 @@ Nuestro proyecto busca construir el módulo de Ventas de un sistema ERP para una
 
 Además de ordenar el trabajo diario, queremos que el módulo ayude a tomar mejores decisiones. Por eso registra también las ventas que se pierden y su motivo, y no solo las que se ganan, para que la empresa aprenda por qué pierde clientes. Junto con eso, ofrece un panel con indicadores simples, como las ventas del mes, los mejores clientes y una proyección de ventas. Todo esto lo desarrollamos con Spec Driven Development: primero definimos el modelo de datos y las especificaciones, y después construimos el código con apoyo de inteligencia artificial, cuidando la privacidad de los datos y evitando sesgos en las reglas del sistema.
 
-## Avance para la revisión (jueves 22 de octubre)
+## Avances para revisión (22 y 26 de octubre)
 
 | Lo que se pide | Dónde está |
 |---|---|
 | Modelo entidad-relación y compatibilidad con la estructura base | [`docs/mer.png`](docs/mer.png) (diagrama) y [`specs/002-modulo-ventas/data-model.md`](specs/002-modulo-ventas/data-model.md) (tablas, columnas, justificación y compatibilidad) |
-| Plan de trabajo del módulo | [`plan.md`](plan.md) |
+| Plan del módulo (resumen, aspectos técnicos y fases) | [`specs/002-modulo-ventas/plan.md`](specs/002-modulo-ventas/plan.md) |
+| Historias de usuario (US) y reparto por persona (26 de octubre) | [`specs/002-modulo-ventas/spec.md`](specs/002-modulo-ventas/spec.md#historias-de-usuario-us) |
 
 ![Modelo entidad-relación del módulo de Ventas](docs/mer.png)
 
@@ -65,10 +66,10 @@ Recorrido detallado: [specs/002-modulo-ventas/quickstart.md](specs/002-modulo-ve
 
 | Documento | Contenido |
 |---|---|
-| [plan.md](plan.md) | **Plan de trabajo del módulo**: funcionalidades, compatibilidad con el ERP, análisis, riesgos, escalabilidad, roles y cronograma |
+| [docs/plan-de-trabajo.md](docs/plan-de-trabajo.md) | Acuerdos del grupo: roles, permisos de cada perfil, cronograma y forma de trabajo |
 | [docs/propuesta-mvp.md](docs/propuesta-mvp.md) | Problema, cliente, usuarios y alcance del MVP |
 | [docs/mer.png](docs/mer.png) | Modelo entidad-relación ([fuente Mermaid](docs/mer.mmd)) |
-| [specs/002-modulo-ventas/spec.md](specs/002-modulo-ventas/spec.md) | Especificación: historias de usuario, requisitos y criterios de éxito |
+| [specs/002-modulo-ventas/spec.md](specs/002-modulo-ventas/spec.md) | Especificación: historias de usuario (US-01 a US-14) con su responsable, requisitos y criterios de éxito |
 | [specs/002-modulo-ventas/plan.md](specs/002-modulo-ventas/plan.md) | Plan técnico y estructura del código |
 | [specs/002-modulo-ventas/research.md](specs/002-modulo-ventas/research.md) | Decisiones técnicas y alternativas descartadas |
 | [specs/002-modulo-ventas/data-model.md](specs/002-modulo-ventas/data-model.md) | Tablas, columnas, justificación y mapeo a `localStorage` |

@@ -11,7 +11,7 @@ Este documento responde al **principio V** de la [constitución](../.specify/mem
 | Administración (fuera del MVP) | Recibe pedidos para facturar | Margen y costo |
 | Gerencia (fuera del MVP) | Indicadores del panel, incluido el margen | — |
 
-Matriz completa de permisos: [`plan.md` §3](../plan.md).
+Matriz completa de permisos: [`plan-de-trabajo.md`](plan-de-trabajo.md#permisos-de-cada-perfil).
 
 En el MVP los perfiles son **simulados** (selector arriba a la derecha). En producción se necesita inicio de sesión real.
 
