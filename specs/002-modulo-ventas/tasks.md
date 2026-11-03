@@ -85,7 +85,7 @@
 - [X] T040 [P] `docs/analisis-escalabilidad.md`, `docs/riesgos-y-sesgos.md` y `docs/guion-presentacion.md`
 - [X] T041 Constitución v1.1.0: principio V de privacidad y sesgos de datos
 - [ ] T042 Revisión del grupo y ensayo de la presentación de 5 minutos (todos los integrantes)
-- [ ] T043 Incorporar el feedback de la revisión del avance (22 de octubre)
+- [X] T043 Incorporar el feedback del avance 01: borrar `plan.md` de la raíz, historias de usuario en el spec, reparto por persona y versión integrada (26 de octubre)
 
 ## Fase 11: Avance para la revisión del 22 de octubre
 
@@ -99,6 +99,45 @@
 - [X] T051 Segunda revisión interna: folio único por serie, solo jefe/a cambia el crédito y carga la demo, montos y folio también en `sales_quotes`, tabla de estados MVP → MER
 - [X] T052 Tercera revisión: un documento nuevo solo nace como cotización o confirmado; decidir aprobaciones se valida también en el almacenamiento
 
+## Fase 12: Iteración 2, equipo Modificaciones (3 – 16 nov)
+
+Ajustes a historias que ya funcionan. Detalle y criterios en [`spec.md`](spec.md#modificaciones-ajustes-a-historias-que-ya-existen).
+
+- [ ] T053 [M-01][US2] Mostrar subtotal, descuento, IVA y total con formato de pesos usando `money()` de `format.js`, sin cambiar el valor guardado (Pedro)
+- [ ] T054 [M-02][US3] Estilo de campo deshabilitado en `styles.css` y ocultar la ✕ de las líneas cuando el documento está cerrado (`setLinesLocked` en `document-form.js`) (Pedro)
+- [ ] T055 [P][M-01][M-02] Pruebas: montos formateados y campos bloqueados en un pedido facturado (Pedro)
+- [ ] T056 [M-03][US4] Cargar en el formulario el motivo de la última solicitud de descuento (`latestApproval`) (Sebastián)
+- [ ] T057 [M-03][US4] Pedir un comentario obligatorio al rechazar en el panel; guardarlo en `discount_approvals` (columna nueva `decision_comment`, avisar a Joaquín para el MER) y mostrarlo en el pedido (Sebastián)
+- [ ] T058 [M-06][US3] Filtro por estado y por vendedor sobre el selector de pedidos (Sebastián)
+- [ ] T059 [P][M-03][M-06] Pruebas: motivo visible, rechazo sin comentario bloqueado, filtro por estado (Sebastián)
+- [ ] T060 [M-04][US5] Mostrar "Motivo de pérdida" solo cuando el estado es `perdida`, y volver a ocultarlo si el estado cambia (Francisca)
+- [ ] T061 [M-05][US7] Buscar también por folio de pedido (`NV-1037` o `1037`) en `search.js` (Francisca)
+- [ ] T062 [M-05][US7] Hacer clic en un pedido de los resultados lo abre en "Pedidos de Venta" (Francisca)
+- [ ] T063 [P][M-04][M-05] Pruebas: motivo oculto en un pedido facturado, búsqueda por folio y clic que abre el pedido (Francisca)
+
+## Fase 13: Iteración 2, equipo Incremental (3 – 16 nov)
+
+Funcionalidad nueva. Detalle y criterios en [`spec.md`](spec.md#incremental-funcionalidad-nueva).
+
+- [ ] T064 [US9] Guardar la lista de precios en `localStorage` (clave `erp_base_module:price_list`), partiendo de la lista del perfil la primera vez (Joaquín)
+- [ ] T065 [US9] Pantalla "Lista de precios" solo para jefe/a: editar precio, agregar producto y desactivar; precio > 0 (Joaquín)
+- [ ] T066 [US9] Productos desactivados fuera del selector de líneas nuevas, pero visibles en documentos antiguos (Joaquín)
+- [ ] T067 [P][US9] Pruebas: el precio nuevo no cambia pedidos antiguos; el vendedor no puede editar precios (Joaquín)
+- [ ] T068 [US10] Función pura `quoteExpiry(doc, hoy)` en `sales-logic.js` que devuelve "vigente", "por vencer" (3 días o menos) o "vencida" (Ezequiel)
+- [ ] T069 [US10] Lista "Por vencer" en el panel y aviso de cotización vencida en el formulario; no confirmar sin extender la vigencia (Ezequiel)
+- [ ] T070 [US10] Agregar "Cotización vencida" a los motivos de pérdida en `ventas.js` (Ezequiel)
+- [ ] T071 [P][US10] Pruebas unitarias de `quoteExpiry` (incluido el caso que vence hoy) y de integración del panel (Ezequiel)
+- [ ] T072 [US12] Agregar `sales_order_status_history` al MER y a `data-model.md` (Joaquín, con Antonio)
+- [ ] T073 [US12] Guardar un registro por cada cambio de estado (estado anterior, nuevo, fecha y perfil) en `storage.js`, sin permitir editarlo ni borrarlo (Antonio)
+- [ ] T074 [US12] Mostrar el historial en el pedido y los días promedio entre `confirmado` y `despachado` en el panel (Antonio)
+- [ ] T075 [P][US12] Pruebas: el historial crece con cada cambio y no se puede modificar (Antonio)
+
+## Fase 14: Versión integrada de la iteración 2 (16 nov)
+
+- [ ] T076 Cada rama con su *pull request* revisado por la pareja del otro equipo (Pedro ↔ Joaquín, Francisca ↔ Ezequiel, Sebastián ↔ Antonio)
+- [ ] T077 Unir todo en `main`, correr `npx vitest run` (todas en verde) y revisar a mano con `npm run dev` en los dos perfiles
+- [ ] T078 Actualizar el estado de las historias en `spec.md`, las capturas de `docs/capturas/` y el README
+
 ## Dependencias
 
-Fase 2 → Fase 3 → (Fases 4 a 9, en orden de prioridad) → Fase 10 → Fase 11. Dentro de cada fase, las tareas [P] pueden repartirse entre integrantes.
+Fase 2 → Fase 3 → (Fases 4 a 9, en orden de prioridad) → Fase 10 → Fase 11 → (Fases 12 y 13 en paralelo) → Fase 14. Dentro de cada fase, las tareas [P] pueden repartirse entre integrantes. T072 (tabla en el MER) va antes de T073.

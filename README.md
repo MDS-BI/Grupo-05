@@ -23,13 +23,14 @@ Nuestro proyecto busca construir el módulo de Ventas de un sistema ERP para una
 
 Además de ordenar el trabajo diario, queremos que el módulo ayude a tomar mejores decisiones. Por eso registra también las ventas que se pierden y su motivo, y no solo las que se ganan, para que la empresa aprenda por qué pierde clientes. Junto con eso, ofrece un panel con indicadores simples, como las ventas del mes, los mejores clientes y una proyección de ventas. Todo esto lo desarrollamos con Spec Driven Development: primero definimos el modelo de datos y las especificaciones, y después construimos el código con apoyo de inteligencia artificial, cuidando la privacidad de los datos y evitando sesgos en las reglas del sistema.
 
-## Avances para revisión (22 y 26 de octubre)
+## Avances para revisión
 
 | Lo que se pide | Dónde está |
 |---|---|
 | Modelo entidad-relación y compatibilidad con la estructura base | [`docs/mer.png`](docs/mer.png) (diagrama) y [`specs/002-modulo-ventas/data-model.md`](specs/002-modulo-ventas/data-model.md) (tablas, columnas, justificación y compatibilidad) |
 | Plan del módulo (resumen, aspectos técnicos y fases) | [`specs/002-modulo-ventas/plan.md`](specs/002-modulo-ventas/plan.md) |
 | Historias de usuario (US) y reparto por persona (26 de octubre) | [`specs/002-modulo-ventas/spec.md`](specs/002-modulo-ventas/spec.md#historias-de-usuario-us) |
+| Iteración 2: modificaciones, incremental y equipos (3 de noviembre) | [`spec.md`, iteración 2](specs/002-modulo-ventas/spec.md#iteración-2-3--16-nov-modificaciones-e-incremental), tareas T053 a T078 en [`tasks.md`](specs/002-modulo-ventas/tasks.md) y equipos en [`docs/plan-de-trabajo.md`](docs/plan-de-trabajo.md#equipos-de-la-iteración-2-3--16-nov) |
 
 ![Modelo entidad-relación del módulo de Ventas](docs/mer.png)
 

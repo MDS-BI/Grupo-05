@@ -13,7 +13,18 @@ Siguiendo el feedback del avance, sacamos el `plan.md` de la raíz. El plan del 
 | Francisca Belén Arias Díaz | @frarias11 | Usuarios, riesgos y sesgos | Documentación |
 | Sebastián Eduardo Amigo Pereira | @xTatan | Documentación, README y presentación | Riesgos |
 
-Las historias de la segunda iteración (US-09 a US-14) están repartidas una por persona; la tabla está en el [spec](../specs/002-modulo-ventas/spec.md#resumen-y-reparto).
+## Equipos de la iteración 2 (3 – 16 nov)
+
+Por el feedback del avance 02 nos dividimos en dos equipos. El detalle de cada ajuste e historia está en el [spec](../specs/002-modulo-ventas/spec.md#iteración-2-3--16-nov-modificaciones-e-incremental) y las tareas en [`tasks.md`](../specs/002-modulo-ventas/tasks.md).
+
+| Equipo | Integrante | Trabajo | Revisa a |
+|---|---|---|---|
+| Modificaciones | Pedro | M-01 montos con formato de pesos · M-02 campos bloqueados en gris | Joaquín |
+| Modificaciones | Francisca | M-04 motivo de pérdida solo si está perdida · M-05 abrir pedidos y buscar por folio | Ezequiel |
+| Modificaciones | Sebastián | M-03 motivo del descuento y comentario al rechazar · M-06 filtro de pedidos | Antonio |
+| Incremental | Joaquín | US-09 lista de precios editable · tabla nueva en el MER | Pedro |
+| Incremental | Ezequiel | US-10 cotizaciones por vencer y vencidas | Francisca |
+| Incremental | Antonio | US-12 historial de estados del pedido | Sebastián |
 
 ## Permisos de cada perfil
 
@@ -37,14 +48,15 @@ En el MVP los perfiles se eligen con un selector, sin contraseña, porque es sol
 | 13 – 20 oct | MER, `data-model.md`, specs y MVP funcionando | Hecho |
 | 22 oct | Revisión del avance (MER y plan) | Hecho: "excelente trabajo", borrar `plan.md` de la raíz |
 | 26 oct | Historias de usuario (US) en el spec, repartidas por persona | Hecho |
-| 27 oct – 2 nov | Semana 1: US-09 y US-10. Generar `tasks.md` desde el spec | Pendiente |
-| 3 – 9 nov | Semana 2: US-11 y US-12 | Pendiente |
-| 10 – 16 nov | Semana 3: US-13 y US-14 | Pendiente |
-| 17 – 23 nov | Semana 4: correcciones, pruebas y versión integrada final | Pendiente |
+| 2 nov | Avance 02: "excelente avance, operativamente no hay errores" | Hecho |
+| 3 nov | Modificaciones (M-01 a M-06) e incremental registrados en el spec; grupo dividido en dos equipos; tareas T053 a T078 | Hecho |
+| 3 – 9 nov | Iteración 2, semana 1: cada uno en su rama; el viernes 6 mostramos el avance en el grupo | En curso |
+| 10 – 16 nov | Iteración 2, semana 2: pruebas, *pull requests* cruzados y **versión integrada en `main` el lunes 16** | Pendiente |
+| 17 – 23 nov | Iteración 3: US-11, US-13 y US-14 | Pendiente |
 | 24 – 29 nov | README final y ensayo de 5 minutos (los seis) | Pendiente |
 | Semana del 30 nov | Presentación y repositorio final; coevaluación | Pendiente |
 
-Cada viernes juntamos lo de la semana en `main` y probamos la versión integrada.
+Cada viernes mostramos el avance en el grupo, y al final de cada iteración juntamos todo en `main` y probamos la versión integrada.
 
 ## Forma de trabajo en el repositorio
 

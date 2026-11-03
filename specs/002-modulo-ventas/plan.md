@@ -97,7 +97,8 @@ tests/
 | 3. Perfil + extensión | Perfil de Ventas, reglas de negocio, líneas, crédito, aprobaciones, panel | ✓ |
 | 4. Calidad | Pruebas de Ventas, revisión visual en escritorio y móvil | ✓ |
 | 5. Documentación | README, análisis de escalabilidad, riesgos y guion de presentación | ✓ |
-| 6. Segunda iteración | US-09 a US-14 del [spec](spec.md#historias-de-usuario-us), dos historias por semana (27 oct – 16 nov), con versión integrada cada viernes | En curso |
+| 6. Iteración 2 (3 – 16 nov) | Dos equipos según el feedback del avance 02: **modificaciones** M-01 a M-06 (ajustes a US-02, 03, 04, 05 y 07) e **incremental** US-09, US-10 y US-12. Versión integrada el 16 de noviembre | En curso |
+| 7. Iteración 3 (17 – 29 nov) | US-11, US-13 y US-14; README final y ensayo | Pendiente |
 
 ## Seguimiento de Complejidad
 

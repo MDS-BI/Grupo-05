@@ -2,8 +2,8 @@
 
 **Rama de la funcionalidad**: `002-modulo-ventas`
 **Creada**: 2026-10-13
-**Actualizada**: 2026-10-26 (historias de usuario para la segunda iteración, según el feedback del avance)
-**Estado**: MVP implementado (US-01 a US-08) · Segunda iteración en curso (US-09 a US-14)
+**Actualizada**: 2026-10-26 (historias de usuario, feedback del avance 01) y 2026-11-03 (modificaciones e incremental, feedback del avance 02)
+**Estado**: MVP implementado (US-01 a US-08) · Iteración 2 en curso, del 3 al 16 de noviembre (modificaciones M-01 a M-06 y nuevas US-09, US-10 y US-12)
 **Grupo**: 5 · Modelación de Sistemas 580211-1 · UdeC 2026-2
 **Base**: [`specs/001-erp-base-module`](../001-erp-base-module/spec.md) (template del curso)
 **Entrada**: Descripción del grupo: "Construir el módulo de Ventas de un ERP sobre el módulo base. Debe permitir registrar clientes, cotizar con una lista de precios, convertir cotizaciones en pedidos con IVA y descuentos, controlar el crédito de cada cliente, exigir aprobación para descuentos altos, registrar por qué se pierden ventas y mostrar indicadores comerciales en un panel."
@@ -37,28 +37,62 @@ Un módulo de Ventas web, construido sobre el template *ERP Software Base Module
 
 ## Historias de Usuario (US)
 
-Escribimos cada historia con el formato **"Como [usuario], quiero [acción], para [beneficio]"**. Cada una tiene sus criterios de aceptación (cómo sabemos que está lista), una prioridad (P1 = imprescindible, P2 = importante, P3 = deseable), las tablas del MER que toca y la persona del grupo que la tiene a cargo. Las tareas de [`tasks.md`](tasks.md) se generan a partir de estas historias, así que cada tarea queda marcada con su US.
+Escribimos cada historia con el formato **"Como [usuario], quiero [acción], para [beneficio]"**. Cada una tiene sus criterios de aceptación (cómo sabemos que está lista), una prioridad (P1 = imprescindible, P2 = importante, P3 = deseable), las tablas del MER que toca y la persona del grupo que la tiene a cargo. Las tareas de [`tasks.md`](tasks.md) se generan a partir de estas historias, así que cada tarea queda marcada con su US (o con su código M-xx si es una modificación).
 
-### Resumen y reparto
+### Resumen
 
-| US | Historia (corta) | Usuario | Prioridad | Responsable | Revisa | Iteración | Estado |
-|---|---|---|---|---|---|---|---|
-| US-01 | Registrar clientes con RUT válido | Vendedor/a | P1 | Joaquín | Ezequiel | MVP | Hecha |
-| US-02 | Cotizar con la lista de precios | Vendedor/a | P1 | Pedro | Antonio | MVP | Hecha |
-| US-03 | Confirmar pedidos solo si hay crédito | Jefe/a de ventas | P1 | Sebastián | Pedro | MVP | Hecha |
-| US-04 | Aprobar descuentos sobre 10 % | Jefe/a de ventas | P1 | Sebastián | Francisca | MVP | Hecha |
-| US-05 | Registrar por qué se pierde una venta | Jefe/a de ventas | P2 | Francisca | Joaquín | MVP | Hecha |
-| US-06 | Ver indicadores y pronóstico | Jefe/a o gerente | P2 | Francisca | Sebastián | MVP | Hecha |
-| US-07 | Buscar clientes y ver sus pedidos | Vendedor/a | P2 | Ezequiel | Joaquín | MVP | Hecha |
-| US-08 | Datos de demostración y respaldo | Jefe/a de ventas | P3 | Antonio | Pedro | MVP | Hecha |
-| US-09 | Mantener la lista de precios | Jefe/a de ventas | P1 | Joaquín | Pedro | Semana 1 (27 oct – 2 nov) | Pendiente |
-| US-10 | Ver cotizaciones por vencer y vencidas | Vendedor/a | P1 | Ezequiel | Francisca | Semana 1 (27 oct – 2 nov) | Pendiente |
-| US-11 | Enviar la cotización al cliente | Vendedor/a | P2 | Francisca | Sebastián | Semana 2 (3 – 9 nov) | Pendiente |
-| US-12 | Ver el historial de estados de un pedido | Jefe/a de ventas | P2 | Antonio | Joaquín | Semana 2 (3 – 9 nov) | Pendiente |
-| US-13 | Fijar metas mensuales por vendedor | Jefe/a de ventas | P3 | Pedro | Antonio | Semana 3 (10 – 16 nov) | Pendiente |
-| US-14 | Ver el stock antes de confirmar | Vendedor/a | P3 | Sebastián | Ezequiel | Semana 3 (10 – 16 nov) | Pendiente |
+| US | Historia (corta) | Usuario | Prioridad | Iteración | Estado |
+|---|---|---|---|---|---|
+| US-01 | Registrar clientes con RUT válido | Vendedor/a | P1 | 1 (MVP) | Hecha |
+| US-02 | Cotizar con la lista de precios | Vendedor/a | P1 | 1 (MVP) | Hecha · ajuste M-01 en la iteración 2 |
+| US-03 | Confirmar pedidos solo si hay crédito | Jefe/a de ventas | P1 | 1 (MVP) | Hecha · ajustes M-02 y M-06 en la iteración 2 |
+| US-04 | Aprobar descuentos sobre 10 % | Jefe/a de ventas | P1 | 1 (MVP) | Hecha · ajuste M-03 en la iteración 2 |
+| US-05 | Registrar por qué se pierde una venta | Jefe/a de ventas | P2 | 1 (MVP) | Hecha · ajuste M-04 en la iteración 2 |
+| US-06 | Ver indicadores y pronóstico | Jefe/a o gerente | P2 | 1 (MVP) | Hecha |
+| US-07 | Buscar clientes y ver sus pedidos | Vendedor/a | P2 | 1 (MVP) | Hecha · ajuste M-05 en la iteración 2 |
+| US-08 | Datos de demostración y respaldo | Jefe/a de ventas | P3 | 1 (MVP) | Hecha |
+| US-09 | Mantener la lista de precios | Jefe/a de ventas | P1 | 2 (3 – 16 nov) | En curso |
+| US-10 | Ver cotizaciones por vencer y vencidas | Vendedor/a | P1 | 2 (3 – 16 nov) | En curso |
+| US-11 | Enviar la cotización al cliente | Vendedor/a | P2 | 3 (17 – 29 nov) | Pendiente |
+| US-12 | Ver el historial de estados de un pedido | Jefe/a de ventas | P2 | 2 (3 – 16 nov) | En curso |
+| US-13 | Fijar metas mensuales por vendedor | Jefe/a de ventas | P3 | 3 (17 – 29 nov) | Pendiente |
+| US-14 | Ver el stock antes de confirmar | Vendedor/a | P3 | 3 (17 – 29 nov) | Pendiente |
 
-La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y para pruebas. Cada viernes juntamos lo de la semana en `main` y probamos la **versión integrada** (`npx vitest run` en verde y una pasada a mano con `npm run dev`). Si alguien se atrasa, lo avisa en el grupo antes del miércoles para redistribuir.
+### Iteración 2 (3 – 16 nov): modificaciones e incremental
+
+En el avance 02 (2 de noviembre) el profe revisó el módulo en local y no encontró errores de funcionamiento. Nos pidió proponer **modificaciones** (ajustes a lo que ya funciona) e **incremental** (funcionalidad nueva), registrarlas en este spec y dividir el grupo en dos. La versión integrada se junta en `main` el **lunes 16 de noviembre**.
+
+Para armar la lista de modificaciones usamos la app con los datos de demostración, con los dos perfiles, y anotamos lo que confundía o faltaba. No son errores que rompan algo: son cosas que un vendedor real notaría el primer día.
+
+| Equipo | Integrantes | Qué hace |
+|---|---|---|
+| Modificaciones | Pedro, Francisca y Sebastián | Ajusta las historias que ya están hechas (M-01 a M-06) |
+| Incremental | Joaquín, Ezequiel y Antonio | Agrega las historias nuevas US-09, US-10 y US-12 |
+
+Cada persona revisa el trabajo de alguien del otro equipo: Pedro ↔ Joaquín, Francisca ↔ Ezequiel y Sebastián ↔ Antonio. Así los dos equipos conocen todo el módulo, que es lo que nos pueden preguntar en la presentación.
+
+#### Modificaciones (ajustes a historias que ya existen)
+
+| Código | Historia | Qué vimos al usar la app | Qué cambia | Responsable |
+|---|---|---|---|---|
+| M-01 | US-02 | El subtotal, descuento, IVA y total del pedido salen como número suelto (`183280`), mientras que el resto de la app muestra `$183.280`. | Los montos del pedido se muestran con formato de pesos. Lo que se guarda sigue siendo un número. | Pedro |
+| M-02 | US-03 | En un pedido confirmado o facturado los productos ya no se pueden cambiar, pero cantidad, precio y descuento se ven igual que un campo editable y la ✕ de quitar línea sigue a la vista. | Los campos bloqueados se ven en gris y la ✕ se oculta, para que se note que el pedido está cerrado. | Pedro |
+| M-03 | US-04 | Después de pedir un descuento, al volver al pedido el campo "Motivo del descuento" aparece vacío. Si el jefe rechaza, el vendedor ve que se rechazó pero no sabe por qué. | El pedido muestra el motivo que se guardó en la solicitud. Al rechazar, el jefe escribe un comentario que el vendedor ve en el pedido. | Sebastián |
+| M-04 | US-05 | El campo "Motivo de pérdida" aparece en todos los pedidos, incluso en uno facturado. | El campo aparece solo cuando el estado es `perdida`. | Francisca |
+| M-05 | US-07 | En la búsqueda se ven los pedidos de cada cliente, pero no se pueden abrir, y no se puede buscar por folio. | Hacer clic en un pedido lo abre en "Pedidos de Venta", y se puede buscar por folio (por ejemplo, `NV-1037`). | Francisca |
+| M-06 | US-03 | Con los datos de demostración hay 39 pedidos en un solo selector, y encontrar uno es lento. | Sobre el selector se agrega un filtro por estado y por vendedor. | Sebastián |
+
+#### Incremental (funcionalidad nueva)
+
+| US | Responsable | Revisa | Nota |
+|---|---|---|---|
+| US-09 Mantener la lista de precios | Joaquín | Pedro | La lista sale del perfil (`ventas.js`) y pasa a guardarse en `localStorage`, igual que clientes y pedidos. |
+| US-10 Cotizaciones por vencer y vencidas | Ezequiel | Francisca | Usa la vigencia (`expiry_date`) que ya existe; agrega el motivo "Cotización vencida". |
+| US-12 Historial de estados de un pedido | Antonio | Sebastián | Necesita la tabla nueva `sales_order_status_history`; Joaquín la agrega al MER. |
+
+US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov). En dos semanas no alcanzábamos a hacer las seis historias nuevas con sus pruebas. Elegimos las dos P1 y el historial de estados, porque deja registro de quién cambió cada pedido y cuándo, igual que ya hacemos con los descuentos (DR-04); las otras tres se pueden agregar después sin cambiar lo que ya existe.
+
+**Cómo trabajamos esta iteración**: cada persona trabaja en una rama con el código de su historia (por ejemplo, `m-01-montos` o `us-09-lista-precios`) y abre un *pull request* que revisa su pareja del otro equipo. Antes de pedir revisión, `npx vitest run` tiene que pasar entero. El viernes 6 de noviembre cada uno muestra en el grupo cómo va, y el lunes 16 queda todo unido en `main`.
 
 ---
 
@@ -95,6 +129,7 @@ La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y
 2. **Dado** que elijo un producto, **cuando** lo selecciono, **entonces** su precio de lista se copia a la línea y no cambia aunque después se modifique la lista.
 3. **Dadas** varias líneas con cantidades y descuentos, **cuando** edito cualquiera, **entonces** los totales se recalculan de inmediato y no se pueden escribir a mano.
 4. **Dada** una cotización sin productos o sin vendedor, **cuando** guardo, **entonces** el sistema no la guarda y dice qué falta.
+5. **Ajuste M-01 (iteración 2)**: **Dado** un pedido con líneas, **cuando** veo el subtotal, descuento, IVA y total, **entonces** aparecen con formato de pesos (`$56.412`).
 
 **Cómo lo probamos**: 10 unidades de un producto de $4.990 con 5 % de descuento tienen que dar subtotal $49.900, descuento $2.495, IVA $9.007 y total $56.412.
 
@@ -112,6 +147,8 @@ La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y
 2. **Dado** que el crédito usado es la suma de los pedidos `confirmado` y `despachado` del cliente, **cuando** un pedido pasa a `facturado`, **entonces** deja de ocupar crédito (la cobranza la ve Finanzas).
 3. **Dado** un pedido confirmado, **cuando** intento cambiarle los productos, **entonces** el sistema no lo deja; solo puede avanzar de estado o anularse.
 4. **Dado** el ciclo `cotización → enviada → confirmado → despachado → facturado`, **cuando** intento un salto que no corresponde (por ejemplo, de `cotización` a `facturado`), **entonces** el sistema lo rechaza.
+5. **Ajuste M-02 (iteración 2)**: **Dado** un pedido confirmado, despachado o facturado, **cuando** lo abro, **entonces** los campos de productos se ven en gris y no aparece la ✕ para quitar líneas.
+6. **Ajuste M-06 (iteración 2)**: **Dados** muchos pedidos, **cuando** elijo un estado o un vendedor en el filtro, **entonces** el selector muestra solo esos pedidos.
 
 **Cómo lo probamos**: con un cliente de límite $50.000 intentamos confirmar un pedido de $59.381 y tiene que salir el bloqueo.
 
@@ -131,6 +168,7 @@ La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y
 2. **Dada** una solicitud pendiente, **cuando** intento confirmar el pedido, **entonces** el sistema no lo deja hasta que se apruebe.
 3. **Dado** el perfil vendedor/a, **cuando** veo el panel, **entonces** veo la solicitud pero no los botones Aprobar/Rechazar.
 4. **Dado** el perfil jefe/a, **cuando** apruebo, **entonces** queda registrado quién y cuándo, y el pedido ya se puede confirmar.
+5. **Ajuste M-03 (iteración 2)**: **Dado** un pedido con una solicitud de descuento, **cuando** lo abro, **entonces** veo el motivo que se guardó. **Dado** el perfil jefe/a, **cuando** rechazo, **entonces** tengo que escribir un comentario, y el vendedor lo ve en el pedido.
 
 **Cómo lo probamos**: guardamos una cotización con una línea al 15 %, revisamos que aparezca pendiente en el panel y la confirmamos solo después de aprobarla con el perfil jefe/a.
 
@@ -146,6 +184,7 @@ La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y
 
 1. **Dada** una cotización, **cuando** la marco como perdida sin motivo, **entonces** el sistema no lo deja y explica por qué el dato importa.
 2. **Dadas** varias cotizaciones perdidas, **cuando** abro el panel, **entonces** veo cuántas se perdieron por cada motivo.
+3. **Ajuste M-04 (iteración 2)**: **Dado** un pedido en cualquier estado distinto de `perdida`, **cuando** lo abro, **entonces** no aparece el campo "Motivo de pérdida".
 
 **Cómo lo probamos**: marcamos una cotización como `perdida` sin motivo (bloqueado) y después con motivo (se guarda), y revisamos el conteo en el panel.
 
@@ -178,6 +217,7 @@ La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y
 
 1. **Dado** un término, **cuando** escribo, **entonces** veo solo los clientes que coinciden, con sus pedidos, monto y estado.
 2. **Dado** un término sin coincidencias, **cuando** busco, **entonces** aparece un mensaje claro y puedo intentar de nuevo.
+3. **Ajuste M-05 (iteración 2)**: **Dado** un cliente con pedidos en los resultados, **cuando** hago clic en uno, **entonces** se abre en "Pedidos de Venta". **Dado** un folio como `NV-1037`, **cuando** lo busco, **entonces** aparece el cliente de ese pedido.
 
 ---
 
@@ -195,7 +235,7 @@ La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y
 
 ---
 
-### Historia de Usuario 9 (US-09): Mantener la lista de precios (Prioridad: P1) · Semana 1
+### Historia de Usuario 9 (US-09): Mantener la lista de precios (Prioridad: P1) · Iteración 2 · Joaquín
 
 **Como** jefe/a de ventas, **quiero** agregar productos a la lista de precios, cambiar sus precios y desactivar los que ya no vendemos, **para** que todos los vendedores coticen con el mismo precio sin tener que tocar el código.
 
@@ -213,7 +253,7 @@ La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y
 
 ---
 
-### Historia de Usuario 10 (US-10): Ver cotizaciones por vencer y vencidas (Prioridad: P1) · Semana 1
+### Historia de Usuario 10 (US-10): Ver cotizaciones por vencer y vencidas (Prioridad: P1) · Iteración 2 · Ezequiel
 
 **Como** vendedor/a, **quiero** ver qué cotizaciones vencen en los próximos 3 días y cuáles ya vencieron, **para** llamar al cliente a tiempo y no dejar ventas botadas.
 
@@ -230,7 +270,7 @@ La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y
 
 ---
 
-### Historia de Usuario 11 (US-11): Enviar la cotización al cliente (Prioridad: P2) · Semana 2
+### Historia de Usuario 11 (US-11): Enviar la cotización al cliente (Prioridad: P2) · Iteración 3
 
 **Como** vendedor/a, **quiero** generar una versión imprimible de la cotización (o guardarla como PDF desde el navegador), **para** mandársela al cliente con un formato ordenado y no como captura de pantalla.
 
@@ -245,7 +285,7 @@ La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y
 
 ---
 
-### Historia de Usuario 12 (US-12): Ver el historial de estados de un pedido (Prioridad: P2) · Semana 2
+### Historia de Usuario 12 (US-12): Ver el historial de estados de un pedido (Prioridad: P2) · Iteración 2 · Antonio
 
 **Como** jefe/a de ventas, **quiero** ver cuándo y quién cambió de estado cada pedido, **para** saber dónde se atrasan las ventas y tener trazabilidad si hay un reclamo.
 
@@ -260,7 +300,7 @@ La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y
 
 ---
 
-### Historia de Usuario 13 (US-13): Fijar metas mensuales por vendedor (Prioridad: P3) · Semana 3
+### Historia de Usuario 13 (US-13): Fijar metas mensuales por vendedor (Prioridad: P3) · Iteración 3
 
 **Como** jefe/a de ventas, **quiero** fijar una meta de ventas mensual para cada vendedor y ver cuánto lleva cada uno, **para** saber a tiempo quién necesita apoyo antes de que termine el mes.
 
@@ -275,7 +315,7 @@ La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y
 
 ---
 
-### Historia de Usuario 14 (US-14): Ver el stock antes de confirmar (Prioridad: P3) · Semana 3
+### Historia de Usuario 14 (US-14): Ver el stock antes de confirmar (Prioridad: P3) · Iteración 3
 
 **Como** vendedor/a, **quiero** ver el stock disponible de cada producto cuando lo agrego a la cotización, **para** no prometer algo que no hay y no perder la venta por "sin stock".
 
@@ -324,7 +364,7 @@ La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y
 - **FR-V17**: Solo los documentos en estado `cotización` o `enviada` se pueden eliminar. Un documento en cualquier otro estado (confirmado, despachado, facturado, perdida o anulado), o un cliente que tenga alguno, NO DEBE eliminarse: queda en la historia de ventas.
 - **FR-V18**: Cuando un descuento requiere aprobación, el motivo DEBE ser obligatorio y la solicitud DEBE registrar al vendedor que la pide.
 
-**Requisitos de la segunda iteración** (US-09 a US-14, pendientes):
+**Requisitos incrementales** (US-09 a US-14; US-09, US-10 y US-12 en la iteración 2, el resto en la iteración 3):
 
 - **FR-V19** (US-09): Solo el perfil jefe/a de ventas DEBE poder crear, editar y desactivar productos y precios de la lista. Un precio DEBE ser mayor que 0. Un producto desactivado no se ofrece en documentos nuevos, pero se mantiene en los antiguos.
 - **FR-V20** (US-10): El sistema DEBE marcar como vencida toda cotización abierta cuya vigencia ya pasó, e impedir confirmarla sin extender la vigencia. El motivo "Cotización vencida" DEBE agregarse a la lista de motivos de pérdida.
@@ -332,6 +372,15 @@ La semana 4 (17 – 23 nov) queda para corregir lo que salga en las revisiones y
 - **FR-V22** (US-12): Cada cambio de estado de un documento DEBE guardarse en un historial que solo admite agregar registros (estado anterior, estado nuevo, fecha y perfil).
 - **FR-V23** (US-13): El sistema DEBE permitir una meta mensual por vendedor y mostrar el avance; el vendedor/a ve solo la suya.
 - **FR-V24** (US-14): El sistema DEBE mostrar el stock disponible al agregar un producto y advertir (sin bloquear la cotización) cuando la cantidad lo supera.
+
+**Requisitos de las modificaciones** (iteración 2):
+
+- **FR-V25** (M-01): Todos los montos del documento DEBEN mostrarse con formato de pesos chilenos; el valor guardado sigue siendo numérico.
+- **FR-V26** (M-02): Los campos de un documento cerrado DEBEN verse deshabilitados, sin la opción de quitar líneas.
+- **FR-V27** (M-03): El documento DEBE mostrar el motivo de su última solicitud de descuento. Rechazar una solicitud DEBE exigir un comentario, que queda guardado con la decisión y lo ve el vendedor.
+- **FR-V28** (M-04): El motivo de pérdida DEBE pedirse y mostrarse solo cuando el estado es `perdida`.
+- **FR-V29** (M-05): La búsqueda DEBE encontrar clientes por el folio de sus pedidos, y cada pedido de los resultados DEBE abrirse al hacer clic.
+- **FR-V30** (M-06): La lista de documentos DEBE poder filtrarse por estado y por vendedor.
 
 ### Requisitos de Datos y Privacidad
 
