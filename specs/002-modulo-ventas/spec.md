@@ -331,24 +331,24 @@ US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov), junto con US-15 (1
 
 ---
 
-### Historia de Usuario 15 (US-15): Iniciar y cerrar sesi?n con mi cuenta (Prioridad: P1) ? Iteraci?n 3 (16 ? 22 nov) ? Francisca Arias
+### Historia de Usuario 15 (US-15): Iniciar y cerrar sesión con mi cuenta (Prioridad: P1) · Iteración 3 (16–22 nov) · Francisca Arias
 
-**Como** vendedor/a o jefe/a de ventas, **quiero** entrar al sistema con mi correo y una contrase?a, **para** que el sistema sepa qui?n soy y que nadie m?s pueda usar mi cuenta.
+**Como** vendedor/a o jefe/a de ventas, **quiero** entrar al sistema con mi correo y una contraseña, **para** que el sistema sepa quién soy y que nadie más pueda usar mi cuenta.
 
-**Por qu? es P1**: hoy cualquiera puede elegir el perfil "Jefe/a de ventas" en el selector y aprobarse su propio descuento, lo que invalida la regla del 10 % (US-04). Adem?s, sin identidad de sesi?n no se puede registrar qui?n realiza cada cambio.
+**Por qué es P1**: hoy cualquiera puede elegir el perfil "Jefe/a de ventas" en el selector y aprobarse su propio descuento, lo que invalida la regla del 10 % (US-04). Además, sin identidad de sesión no se puede registrar quién realiza cada cambio.
 
-**C?mo se prueba sola**: abrir la app sin sesi?n, entrar con una cuenta de prueba, ver el nombre y rol arriba, cerrar sesi?n y volver a la pantalla de entrada.
+**Cómo se prueba sola**: abrir la app sin sesión, entrar con una cuenta de prueba, ver el nombre y rol arriba, cerrar sesión y volver a la pantalla de entrada.
 
-**Tablas**: users **[Nuevo, Joaqu?n lo agrega al MER en la US-17]**, employees [Externo]
+**Tablas**: users **[Nuevo, Joaquín lo agrega al MER en la US-17]**, employees [Externo]
 
-**Criterios de aceptaci?n**:
+**Criterios de aceptación**:
 
-1. **Dado** que no he iniciado sesi?n, **cuando** abro la app, **entonces** veo solo la pantalla de entrada (correo y contrase?a) y no puedo ver clientes ni pedidos.
-2. **Dado** un correo y una contrase?a correctos, **cuando** presiono "Entrar", **entonces** llego al panel y arriba aparece mi nombre y mi rol.
-3. **Dada** una contrase?a incorrecta, **cuando** intento entrar, **entonces** aparece "Correo o contrase?a incorrectos", sin indicar cu?l de los dos es incorrecto.
-4. **Dados** 5 intentos fallidos seguidos con la misma cuenta, **cuando** intento otra vez, **entonces** la cuenta queda bloqueada 15 minutos y se informa cu?nto tiempo falta.
-5. **Dada** una sesi?n abierta, **cuando** presiono "Cerrar sesi?n" o paso 30 minutos sin usar la app, **entonces** vuelvo a la pantalla de entrada.
-6. **Dada** cualquier cuenta, **cuando** se guarda su contrase?a, **entonces** se almacena de forma protegida (hash), nunca como texto legible.
+1. **Dado** que no he iniciado sesión, **cuando** abro la app, **entonces** veo solo la pantalla de entrada (correo y contraseña) y no puedo ver clientes ni pedidos.
+2. **Dado** un correo y una contraseña correctos, **cuando** presiono "Entrar", **entonces** llego al panel y arriba aparece mi nombre y mi rol.
+3. **Dada** una contraseña incorrecta, **cuando** intento entrar, **entonces** aparece "Correo o contraseña incorrectos", sin indicar cuál de los dos es incorrecto.
+4. **Dados** 5 intentos fallidos seguidos con la misma cuenta, **cuando** intento otra vez, **entonces** la cuenta queda bloqueada 15 minutos y se informa cuánto tiempo falta.
+5. **Dada** una sesión abierta, **cuando** presiono "Cerrar sesión" o paso 30 minutos sin usar la app, **entonces** vuelvo a la pantalla de entrada.
+6. **Dada** cualquier cuenta, **cuando** se guarda su contraseña, **entonces** se almacena de forma protegida (hash), nunca como texto legible.
 
 ---
 
@@ -362,9 +362,9 @@ US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov), junto con US-15 (1
 - Cotización que vence el mismo día que se mira: cuenta como "por vencer", no como vencida (US-10).
 - Producto desactivado que está en una cotización abierta: la cotización se puede seguir trabajando, pero no se puede agregar otra línea con ese producto (US-09).
 - Vendedor sin meta en el mes: aparece en el panel con "sin meta" en vez de 0 % (US-13).
-- Intento de acceso a datos o acciones sin sesi?n activa: se redirige a la pantalla de entrada.
+- Intento de acceso a datos o acciones sin sesión activa: se redirige a la pantalla de entrada.
 - Cuenta bloqueada por intentos fallidos: se impide el ingreso hasta cumplir los 15 minutos y se muestra el tiempo restante.
-- Cierre de sesi?n manual o por inactividad (30 minutos): la sesi?n se invalida y se exige volver a autenticarse.
+- Cierre de sesión manual o por inactividad (30 minutos): la sesión se invalida y se exige volver a autenticarse.
 
 ## Requisitos *(obligatorio)*
 
@@ -407,14 +407,14 @@ US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov), junto con US-15 (1
 - **FR-V29** (M-05): La búsqueda DEBE encontrar clientes por el folio de sus pedidos, y cada pedido de los resultados DEBE abrirse al hacer clic.
 - **FR-V30** (M-06): La lista de documentos DEBE poder filtrarse por estado y por vendedor.
 
-**Requisitos incrementales de autenticaci?n** (US-15, Iteraci?n 3):
+**Requisitos incrementales de autenticación** (US-15, Iteración 3):
 
-- **FR-V31** (US-15): Sin una sesi?n autenticada, el sistema DEBE mostrar solo la pantalla de entrada y DENEGAR el acceso a clientes, pedidos y dem?s informaci?n del m?dulo.
-- **FR-V32** (US-15): El sistema DEBE permitir iniciar sesi?n con correo y contrase?a v?lidos, mostrar el nombre y rol del usuario autenticado y restringir las acciones seg?n su rol (reemplazando la selecci?n manual de perfil).
-- **FR-V33** (US-15): Ante credenciales inv?lidas, el sistema DEBE mostrar un mensaje gen?rico sin revelar si el correo o la contrase?a es incorrecto.
+- **FR-V31** (US-15): Sin una sesión autenticada, el sistema DEBE mostrar solo la pantalla de entrada y DENEGAR el acceso a clientes, pedidos y demás información del módulo.
+- **FR-V32** (US-15): El sistema DEBE permitir iniciar sesión con correo y contraseña válidos, mostrar el nombre y rol del usuario autenticado y restringir las acciones según su rol (reemplazando la selección manual de perfil).
+- **FR-V33** (US-15): Ante credenciales inválidas, el sistema DEBE mostrar un mensaje genérico sin revelar si el correo o la contraseña es incorrecto.
 - **FR-V34** (US-15): Tras 5 intentos fallidos consecutivos para una misma cuenta, el sistema DEBE bloquear el ingreso por 15 minutos e informar el tiempo restante.
-- **FR-V35** (US-15): El sistema DEBE permitir cerrar sesi?n manualmente y cerrar autom?ticamente la sesi?n tras 30 minutos de inactividad.
-- **FR-V36** (US-15): Las contrase?as DEBEN almacenarse ?nicamente en forma protegida (hash), nunca en texto legible.
+- **FR-V35** (US-15): El sistema DEBE permitir cerrar sesión manualmente y cerrar automáticamente la sesión tras 30 minutos de inactividad.
+- **FR-V36** (US-15): Las contraseñas DEBEN almacenarse únicamente en forma protegida (hash), nunca en texto legible.
 
 ### Requisitos de Datos y Privacidad
 
@@ -432,7 +432,7 @@ US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov), junto con US-15 (1
 - **Aprobación de descuento** (`discount_approvals`): cotización o pedido, %, motivo, solicitante, decisión, aprobador y fechas.
 - **Motivo de pérdida** (`lost_reasons`): lista cerrada.
 
-- **Cuenta de usuario** (users) [Nuevo, US-15/US-17]: correo, contrase?a almacenada como hash, rol (vendedor/a o jefe/a), v?nculo con employees y estado/bloqueo por intentos fallidos.
+- **Cuenta de usuario** (users) [Nuevo, US-15/US-17]: correo, contraseña almacenada como hash, rol (vendedor/a o jefe/a), vínculo con employees y estado/bloqueo por intentos fallidos.
 
 Detalle completo en [data-model.md](data-model.md).
 
