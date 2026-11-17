@@ -57,6 +57,7 @@ Escribimos cada historia con el formato **"Como [usuario], quiero [acción], par
 | US-12 | Ver el historial de estados de un pedido | Jefe/a de ventas | P2 | 2 (3 – 16 nov) | En curso |
 | US-13 | Fijar metas mensuales por vendedor | Jefe/a de ventas | P3 | 3 (17 – 29 nov) | Pendiente |
 | US-14 | Ver el stock antes de confirmar | Vendedor/a | P3 | 3 (17 – 29 nov) | Pendiente |
+| US-15 | Iniciar y cerrar sesión con mi cuenta | Vendedor/a y Jefe/a de ventas | P1 | 3 (16 – 22 nov) | Pendiente |
 
 ### Iteración 2 (3 – 16 nov): modificaciones e incremental
 
@@ -90,7 +91,7 @@ Cada persona revisa el trabajo de alguien del otro equipo: Pedro ↔ Joaquín, F
 | US-10 Cotizaciones por vencer y vencidas | Ezequiel | Francisca | Usa la vigencia (`expiry_date`) que ya existe; agrega el motivo "Cotización vencida". |
 | US-12 Historial de estados de un pedido | Antonio | Sebastián | Necesita la tabla nueva `sales_order_status_history`; Joaquín la agrega al MER. |
 
-US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov). En dos semanas no alcanzábamos a hacer las seis historias nuevas con sus pruebas. Elegimos las dos P1 y el historial de estados, porque deja registro de quién cambió cada pedido y cuándo, igual que ya hacemos con los descuentos (DR-04); las otras tres se pueden agregar después sin cambiar lo que ya existe.
+US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov), junto con US-15 (16 – 22 nov). En dos semanas no alcanzábamos a hacer las seis historias nuevas con sus pruebas. Elegimos las dos P1 y el historial de estados, porque deja registro de quién cambió cada pedido y cuándo, igual que ya hacemos con los descuentos (DR-04); las otras tres se pueden agregar después sin cambiar lo que ya existe. US-15 se prioriza en la iteración 3 porque corrige el acceso simulado por selector y permite saber quién realiza cada acción.
 
 **Cómo trabajamos esta iteración**: cada persona trabaja en una rama con el código de su historia (por ejemplo, `m-01-montos` o `us-09-lista-precios`) y abre un *pull request* que revisa su pareja del otro equipo. Antes de pedir revisión, `npx vitest run` tiene que pasar entero. El viernes 6 de noviembre cada uno muestra en el grupo cómo va, y el lunes 16 queda todo unido en `main`.
 
@@ -330,6 +331,27 @@ US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov). En dos semanas no 
 
 ---
 
+### Historia de Usuario 15 (US-15): Iniciar y cerrar sesi?n con mi cuenta (Prioridad: P1) ? Iteraci?n 3 (16 ? 22 nov) ? Francisca Arias
+
+**Como** vendedor/a o jefe/a de ventas, **quiero** entrar al sistema con mi correo y una contrase?a, **para** que el sistema sepa qui?n soy y que nadie m?s pueda usar mi cuenta.
+
+**Por qu? es P1**: hoy cualquiera puede elegir el perfil "Jefe/a de ventas" en el selector y aprobarse su propio descuento, lo que invalida la regla del 10 % (US-04). Adem?s, sin identidad de sesi?n no se puede registrar qui?n realiza cada cambio.
+
+**C?mo se prueba sola**: abrir la app sin sesi?n, entrar con una cuenta de prueba, ver el nombre y rol arriba, cerrar sesi?n y volver a la pantalla de entrada.
+
+**Tablas**: users **[Nuevo, Joaqu?n lo agrega al MER en la US-17]**, employees [Externo]
+
+**Criterios de aceptaci?n**:
+
+1. **Dado** que no he iniciado sesi?n, **cuando** abro la app, **entonces** veo solo la pantalla de entrada (correo y contrase?a) y no puedo ver clientes ni pedidos.
+2. **Dado** un correo y una contrase?a correctos, **cuando** presiono "Entrar", **entonces** llego al panel y arriba aparece mi nombre y mi rol.
+3. **Dada** una contrase?a incorrecta, **cuando** intento entrar, **entonces** aparece "Correo o contrase?a incorrectos", sin indicar cu?l de los dos es incorrecto.
+4. **Dados** 5 intentos fallidos seguidos con la misma cuenta, **cuando** intento otra vez, **entonces** la cuenta queda bloqueada 15 minutos y se informa cu?nto tiempo falta.
+5. **Dada** una sesi?n abierta, **cuando** presiono "Cerrar sesi?n" o paso 30 minutos sin usar la app, **entonces** vuelvo a la pantalla de entrada.
+6. **Dada** cualquier cuenta, **cuando** se guarda su contrase?a, **entonces** se almacena de forma protegida (hash), nunca como texto legible.
+
+---
+
 ### Casos Límite
 
 - Cliente sin límite de crédito: no se bloquea por crédito (se asume contado o crédito sin tope).
@@ -340,6 +362,9 @@ US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov). En dos semanas no 
 - Cotización que vence el mismo día que se mira: cuenta como "por vencer", no como vencida (US-10).
 - Producto desactivado que está en una cotización abierta: la cotización se puede seguir trabajando, pero no se puede agregar otra línea con ese producto (US-09).
 - Vendedor sin meta en el mes: aparece en el panel con "sin meta" en vez de 0 % (US-13).
+- Intento de acceso a datos o acciones sin sesi?n activa: se redirige a la pantalla de entrada.
+- Cuenta bloqueada por intentos fallidos: se impide el ingreso hasta cumplir los 15 minutos y se muestra el tiempo restante.
+- Cierre de sesi?n manual o por inactividad (30 minutos): la sesi?n se invalida y se exige volver a autenticarse.
 
 ## Requisitos *(obligatorio)*
 
@@ -382,6 +407,15 @@ US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov). En dos semanas no 
 - **FR-V29** (M-05): La búsqueda DEBE encontrar clientes por el folio de sus pedidos, y cada pedido de los resultados DEBE abrirse al hacer clic.
 - **FR-V30** (M-06): La lista de documentos DEBE poder filtrarse por estado y por vendedor.
 
+**Requisitos incrementales de autenticaci?n** (US-15, Iteraci?n 3):
+
+- **FR-V31** (US-15): Sin una sesi?n autenticada, el sistema DEBE mostrar solo la pantalla de entrada y DENEGAR el acceso a clientes, pedidos y dem?s informaci?n del m?dulo.
+- **FR-V32** (US-15): El sistema DEBE permitir iniciar sesi?n con correo y contrase?a v?lidos, mostrar el nombre y rol del usuario autenticado y restringir las acciones seg?n su rol (reemplazando la selecci?n manual de perfil).
+- **FR-V33** (US-15): Ante credenciales inv?lidas, el sistema DEBE mostrar un mensaje gen?rico sin revelar si el correo o la contrase?a es incorrecto.
+- **FR-V34** (US-15): Tras 5 intentos fallidos consecutivos para una misma cuenta, el sistema DEBE bloquear el ingreso por 15 minutos e informar el tiempo restante.
+- **FR-V35** (US-15): El sistema DEBE permitir cerrar sesi?n manualmente y cerrar autom?ticamente la sesi?n tras 30 minutos de inactividad.
+- **FR-V36** (US-15): Las contrase?as DEBEN almacenarse ?nicamente en forma protegida (hash), nunca en texto legible.
+
 ### Requisitos de Datos y Privacidad
 
 - **DR-01**: El límite de crédito lo fija la jefatura según el historial de pago del cliente (en producción, con datos de Finanzas; en el MVP se ingresa a mano); el sistema no almacena ni usa atributos personales (edad, género, comuna de residencia de personas naturales) para decisiones comerciales.
@@ -397,6 +431,8 @@ US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov). En dos semanas no 
 - **Producto / precio** (`products`, `price_list_items`): catálogo con precio de lista y costo estándar.
 - **Aprobación de descuento** (`discount_approvals`): cotización o pedido, %, motivo, solicitante, decisión, aprobador y fechas.
 - **Motivo de pérdida** (`lost_reasons`): lista cerrada.
+
+- **Cuenta de usuario** (users) [Nuevo, US-15/US-17]: correo, contrase?a almacenada como hash, rol (vendedor/a o jefe/a), v?nculo con employees y estado/bloqueo por intentos fallidos.
 
 Detalle completo en [data-model.md](data-model.md).
 
