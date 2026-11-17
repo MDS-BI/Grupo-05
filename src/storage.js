@@ -3,6 +3,7 @@
 
 import { getConfig, customFieldsFor, labelFor, grammar } from './module-config.js';
 import { isValidRut, cleanRut, formatRut, validateLines, computeTotals, creditCheck, requiresApproval, maxDiscountPct } from './sales/sales-logic.js';
+import { assertCan, canEditDocument, isBoss } from './auth/permissions.js';
 
 export const ENTITY_KEY = 'erp_base_module:entities';
 export const DOCUMENT_KEY = 'erp_base_module:documents';
@@ -161,10 +162,56 @@ export function updateEntity(id, changes){
   return updated;
 }
 
-/** Perfil simulado del MVP (vendedor / jefe). En producción vendrá del inicio de sesión. */
+// ---------------------------------------------------------------------------
+// Usuario con sesión abierta (US-16)
+// ---------------------------------------------------------------------------
+// Todo el módulo pregunta "¿quién tiene la sesión abierta?" a través de
+// `currentUser()`. Mientras no exista el inicio de sesión (US-15), la respuesta
+// sale del selector "Perfil" de siempre (sin nombre). Cuando US-15 esté lista,
+// basta con llamar una vez a `setCurrentUserProvider(() => usuarioDeLaSesion)`
+// y el rol y el nombre pasan a salir de la cuenta, sin tocar el resto del código.
+
+/** Perfil simulado del MVP (vendedor / jefe). Se reemplaza por la sesión de US-15. */
 export const ROLE_KEY = 'erp_base_module:role';
+
+function legacyProfileUser(){
+  try { return { name: '', role: localStorage.getItem(ROLE_KEY) || 'vendedor' }; }
+  catch { return { name: '', role: 'vendedor' }; }
+}
+
+let userProvider = legacyProfileUser;
+
+/** US-15 lo llama con una función que devuelve `{ name, role }` de la sesión (o `null` sin sesión). */
+export function setCurrentUserProvider(fn){
+  userProvider = typeof fn === 'function' ? fn : legacyProfileUser;
+}
+
+/** `{ name, role }` de quien tiene la sesión abierta, o `null` si no hay sesión. */
+export function currentUser(){
+  try { return userProvider() || null; } catch { return null; }
+}
+
+/** Rol de quien tiene la sesión abierta. Sin sesión, el de menos permisos. */
 export function currentRole(){
-  try { return localStorage.getItem(ROLE_KEY) || 'vendedor'; } catch { return 'vendedor'; }
+  return currentUser()?.role || 'vendedor';
+}
+
+/** En Ventas, revisa el permiso aunque la función se llame desde la consola del navegador. */
+function guard(action){
+  if(getConfig().sales) assertCan(currentUser(), action);
+}
+
+/** Usuario vendedor/a con nombre conocido (es decir, ya viene de una sesión real). */
+function namedSeller(){
+  const user = currentUser();
+  return user && user.name && !isBoss(user) ? user : null;
+}
+
+function assertCanEditDocument(doc){
+  const user = namedSeller();
+  if(getConfig().sales && user && !canEditDocument(user, doc)){
+    throw new Error(`Este documento es de ${doc.vendedor}: solo puedes mirarlo. Puedes editar solo tus propios documentos.`);
+  }
 }
 
 export function deleteEntity(id){
@@ -350,6 +397,9 @@ function failWith(errors){
 }
 
 export function addDocument(input){
+  // Un vendedor/a con sesión siempre crea a su nombre (criterio 3 de US-16).
+  const seller = getConfig().sales ? namedSeller() : null;
+  if(seller) input = { ...input, vendedor: seller.name };
   const { valid, errors } = validateDocument(input);
   if(!valid) throw failWith(errors);
   const ts = now();
@@ -372,6 +422,9 @@ export function updateDocument(id, changes){
   const idx = all.findIndex(d => d.id === id);
   if(idx === -1) throw new Error('Documento no encontrado.');
   const current = all[idx];
+  assertCanEditDocument(current);
+  // Un vendedor/a no puede pasarle su documento a otra persona.
+  if(getConfig().sales && namedSeller() && 'vendedor' in changes) changes = { ...changes, vendedor: current.vendedor || namedSeller().name };
   const lc = getConfig().statusLifecycle;
   if(lc && 'status' in changes && !isBlank(current.status) && changes.status !== current.status){
     const allowed = lc.transitions[current.status] || [];
@@ -397,6 +450,7 @@ export function deleteDocument(id){
   const all = loadDocuments();
   const sales = getConfig().sales;
   const target = all.find(d => d.id === id);
+  if(target) assertCanEditDocument(target);
   if(sales && target && !sales.openStatuses.includes(target.status)){
     throw new Error(`Un documento en estado "${target.status}" no se elimina: queda en la historia (si corresponde, anúlalo).`);
   }
@@ -434,7 +488,7 @@ export function requestApproval(docId, discountPct, reason){
     sales_order_id: docId,
     discount_pct: discountPct,
     reason: trimmed(reason),
-    requested_by: loadDocuments().find(d => d.id === docId)?.vendedor || '',
+    requested_by: currentUser()?.name || loadDocuments().find(d => d.id === docId)?.vendedor || '',
     decision: 'pendiente',
     approved_by: '',
     requested_at: now(),
@@ -445,12 +499,14 @@ export function requestApproval(docId, discountPct, reason){
 }
 
 export function decideApproval(approvalId, decision, approver){
-  if(getConfig().sales && currentRole() !== 'jefe') throw new Error('Solo el jefe/a de ventas puede aprobar o rechazar descuentos.');
+  // El rol se revisa acá y no solo escondiendo los botones (nota de US-16).
+  guard('decidir-descuento');
   if(decision !== 'aprobado' && decision !== 'rechazado') throw new Error('La decisión debe ser "aprobado" o "rechazado".');
   const all = loadApprovals();
   const idx = all.findIndex(a => a.approval_id === approvalId);
   if(idx === -1) throw new Error('Solicitud no encontrada.');
-  all[idx] = { ...all[idx], decision, approved_by: trimmed(approver), decided_at: now() };
+  // Queda a nombre de quien tiene la sesión abierta (criterio 5); el parámetro solo sirve sin sesión.
+  all[idx] = { ...all[idx], decision, approved_by: trimmed(currentUser()?.name || approver), decided_at: now() };
   write(APPROVAL_KEY, all);
   return all[idx];
 }
@@ -462,16 +518,19 @@ export function pendingApprovals(){
 // ---------------------------------------------------------------------------
 
 export function clearAll(){
+  guard('borrar-datos');
   localStorage.removeItem(ENTITY_KEY);
   localStorage.removeItem(DOCUMENT_KEY);
   localStorage.removeItem(APPROVAL_KEY);
 }
 
 export function exportData(){
+  guard('exportar-datos');
   return { entities: loadEntities(), documents: loadDocuments(), discount_approvals: loadApprovals(), exportedAt: now() };
 }
 
 export function importData(data){
+  guard('importar-datos');
   if(!data || !Array.isArray(data.entities) || !Array.isArray(data.documents)) throw new Error('El archivo no tiene el formato esperado.');
   write(ENTITY_KEY, data.entities);
   write(DOCUMENT_KEY, data.documents);
