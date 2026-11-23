@@ -6,6 +6,9 @@ erDiagram
     employees ||--o{ sales_orders : "vendedor"
     employees ||--o{ discount_approvals : "solicita"
     employees |o--o{ discount_approvals : "decide"
+    employees ||--o| users : "tiene cuenta"
+    users ||--o{ sales_order_status_history : "cambia estado"
+    sales_orders ||--o{ sales_order_status_history : "historial"
     opportunities |o--o{ sales_quotes : "origina"
     opportunities |o--o{ sales_orders : "origina"
     currencies ||--o{ price_lists : "expresa"
@@ -70,6 +73,27 @@ erDiagram
         int employee_id PK
         varchar first_name
         varchar last_name
+    }
+    users {
+        int user_id PK
+        int employee_id FK "unico"
+        varchar email "unico"
+        char password_hash "SHA-256"
+        char salt
+        varchar role "vendedor o jefe"
+        boolean active
+        int failed_attempts
+        datetime locked_until
+        boolean must_change_password
+        datetime last_login_at
+    }
+    sales_order_status_history {
+        int history_id PK
+        int sales_order_id FK
+        varchar from_status
+        varchar to_status
+        int changed_by FK
+        datetime changed_at
     }
     opportunities {
         int opportunity_id PK
@@ -174,6 +198,7 @@ erDiagram
         decimal discount_pct
         varchar reason "obligatorio"
         varchar decision "pendiente, aprobado, rechazado"
+        varchar decision_comment "obligatorio si rechaza"
         datetime requested_at
         datetime decided_at
     }
@@ -206,4 +231,4 @@ erDiagram
     classDef nuevo fill:#fff4e0,stroke:#d97706,color:#7c2d12
     class employees,addresses,currencies,tax_codes,products,opportunities,shipments,ar_invoices externo
     class customers,price_lists,price_list_items,sales_quotes,sales_quote_lines,sales_orders,sales_order_lines,returns_rma,rma_lines base
-    class lost_reasons,discount_approvals nuevo
+    class lost_reasons,discount_approvals,users,sales_order_status_history nuevo

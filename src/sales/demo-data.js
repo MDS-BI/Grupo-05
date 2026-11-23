@@ -122,7 +122,7 @@ export function buildDemoData(sales, todayStr){
           reason: 'Compra por volumen',
           requested_by: doc.vendedor,
           decision: confirmed ? 'aprobado' : 'pendiente',
-          approved_by: confirmed ? 'Jefe/a de ventas' : '',
+          approved_by: confirmed ? 'Andrea Lagos' : '',
           requested_at: ts,
           decided_at: confirmed ? ts : ''
         });

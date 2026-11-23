@@ -20,6 +20,7 @@ const RESERVED_KEYS = ['lines', 'entityId'];
 
 export const DEFAULT_CONFIG = Object.freeze({
   moduleName: 'Módulo Base ERP',
+  companyName: '',
   labels: Object.freeze({ entity: 'Entidad', entities: 'Entidades', document: 'Documento', documents: 'Documentos' }),
   customFields: Object.freeze([]),
   statusLifecycle: null,
@@ -34,6 +35,7 @@ const KEY_PATTERN = /^[A-Za-z][A-Za-z0-9_]*$/;
 function cloneDefaults(){
   return {
     moduleName: DEFAULT_CONFIG.moduleName,
+    companyName: '',
     labels: { ...DEFAULT_CONFIG.labels },
     customFields: [],
     statusLifecycle: null,
@@ -158,7 +160,8 @@ function normalizeSales(sales, statusLifecycle, errors){
     confirmedStatuses: [],
     openStatuses: [],
     newDocumentStatuses: [],   // vacío = un documento nuevo puede nacer en cualquier estado
-    committedStatuses: []
+    committedStatuses: [],
+    accounts: []               // cuentas de prueba (US-15); vacío = sin inicio de sesión
   };
   const num = (k, min, max) => {
     if(sales[k] === undefined) return;
@@ -208,6 +211,16 @@ function normalizeSales(sales, statusLifecycle, errors){
     else errors.push('sales.lostStatus debe ser un estado del statusLifecycle.');
   }
   if(sales.lostReasonField !== undefined) out.lostReasonField = String(sales.lostReasonField);
+  if(sales.accounts !== undefined){
+    if(!Array.isArray(sales.accounts)) errors.push('sales.accounts debe ser una lista.');
+    else sales.accounts.forEach((a, i) => {
+      if(!isPlainObject(a) || typeof a.name !== 'string' || !a.name.trim() || typeof a.email !== 'string' || !a.email.includes('@')
+        || !['vendedor', 'jefe'].includes(a.role) || typeof a.password !== 'string'){
+        errors.push(`sales.accounts[${i}] necesita name, email, role (vendedor o jefe) y password.`); return;
+      }
+      out.accounts.push({ name: a.name.trim(), email: a.email.trim().toLowerCase(), role: a.role, password: a.password });
+    });
+  }
   return out;
 }
 
@@ -250,6 +263,11 @@ export function normalizeConfig(raw){
       if(typeof raw.theme.accentColor === 'string' && HEX_COLOR.test(raw.theme.accentColor)) config.theme.accentColor = raw.theme.accentColor;
       else errors.push(`theme.accentColor "${raw.theme.accentColor}" no es un color hexadecimal válido; se usa el color por defecto.`);
     }
+  }
+
+  if(raw.companyName !== undefined){
+    if(typeof raw.companyName === 'string' && raw.companyName.trim()) config.companyName = raw.companyName.trim();
+    else errors.push('companyName debe ser un texto no vacío.');
   }
 
   config.fieldLabels = normalizeFieldLabels(raw.fieldLabels, errors);

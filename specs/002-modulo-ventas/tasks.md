@@ -106,9 +106,9 @@ Ajustes a historias que ya funcionan. Detalle y criterios en [`spec.md`](spec.md
 - [ ] T053 [M-01][US2] Mostrar subtotal, descuento, IVA y total con formato de pesos usando `money()` de `format.js`, sin cambiar el valor guardado (Pedro)
 - [ ] T054 [M-02][US3] Estilo de campo deshabilitado en `styles.css` y ocultar la ✕ de las líneas cuando el documento está cerrado (`setLinesLocked` en `document-form.js`) (Pedro)
 - [ ] T055 [P][M-01][M-02] Pruebas: montos formateados y campos bloqueados en un pedido facturado (Pedro)
-- [ ] T056 [M-03][US4] Cargar en el formulario el motivo de la última solicitud de descuento (`latestApproval`) (Sebastián)
-- [ ] T057 [M-03][US4] Pedir un comentario obligatorio al rechazar en el panel; guardarlo en `discount_approvals` (columna nueva `decision_comment`, avisar a Joaquín para el MER) y mostrarlo en el pedido (Sebastián)
-- [ ] T058 [M-06][US3] Filtro por estado y por vendedor sobre el selector de pedidos (Sebastián)
+- [X] T056 [M-03][US4] Cargar en el formulario el motivo de la última solicitud de descuento (`latestApproval`) (Sebastián)
+- [X] T057 [M-03][US4] Pedir un comentario obligatorio al rechazar en el panel; guardarlo en `discount_approvals` (columna nueva `decision_comment`, avisar a Joaquín para el MER) y mostrarlo en el pedido (Sebastián)
+- [X] T058 [M-06][US3] Filtro por estado y por vendedor sobre el selector de pedidos (Sebastián)
 - [ ] T059 [P][M-03][M-06] Pruebas: motivo visible, rechazo sin comentario bloqueado, filtro por estado (Sebastián)
 - [ ] T060 [M-04][US5] Mostrar "Motivo de pérdida" solo cuando el estado es `perdida`, y volver a ocultarlo si el estado cambia (Francisca)
 - [ ] T061 [M-05][US7] Buscar también por folio de pedido (`NV-1037` o `1037`) en `search.js` (Francisca)
@@ -127,8 +127,8 @@ Funcionalidad nueva. Detalle y criterios en [`spec.md`](spec.md#incremental-func
 - [ ] T069 [US10] Lista "Por vencer" en el panel y aviso de cotización vencida en el formulario; no confirmar sin extender la vigencia (Ezequiel)
 - [ ] T070 [US10] Agregar "Cotización vencida" a los motivos de pérdida en `ventas.js` (Ezequiel)
 - [ ] T071 [P][US10] Pruebas unitarias de `quoteExpiry` (incluido el caso que vence hoy) y de integración del panel (Ezequiel)
-- [ ] T072 [US12] Agregar `sales_order_status_history` al MER y a `data-model.md` (Joaquín, con Antonio)
-- [ ] T073 [US12] Guardar un registro por cada cambio de estado (estado anterior, nuevo, fecha y perfil) en `storage.js`, sin permitir editarlo ni borrarlo (Antonio)
+- [X] T072 [US12] Agregar `sales_order_status_history` al MER y a `data-model.md` (Joaquín, con Antonio)
+- [X] T073 [US12] Guardar un registro por cada cambio de estado (estado anterior, nuevo, fecha y perfil) en `storage.js`, sin permitir editarlo ni borrarlo (Antonio)
 - [ ] T074 [US12] Mostrar el historial en el pedido y los días promedio entre `confirmado` y `despachado` en el panel (Antonio)
 - [ ] T075 [P][US12] Pruebas: el historial crece con cada cambio y no se puede modificar (Antonio)
 
@@ -137,6 +137,25 @@ Funcionalidad nueva. Detalle y criterios en [`spec.md`](spec.md#incremental-func
 - [ ] T076 Cada rama con su *pull request* revisado por la pareja del otro equipo (Pedro ↔ Joaquín, Francisca ↔ Ezequiel, Sebastián ↔ Antonio)
 - [ ] T077 Unir todo en `main`, correr `npx vitest run` (todas en verde) y revisar a mano con `npm run dev` en los dos perfiles
 - [ ] T078 Actualizar el estado de las historias en `spec.md`, las capturas de `docs/capturas/` y el README
+
+## Fase 15: Iteración 3, seguridad y pantallas propias (16 – 29 nov)
+
+**Objetivo**: que cada persona entre con su cuenta, que el sistema haga cumplir lo que cada rol puede hacer y que el panel deje de parecerse al template. Historias en `docs/historias-de-usuario/` y en `spec.md`; usuarios y permisos en `docs/usuarios-y-roles.md`.
+
+- [X] T079 [US15] `src/auth.js`: cuentas en `localStorage` (`erp_base_module:users`), contraseña con SHA-256 + sal por cuenta (Web Crypto), cuentas de prueba del perfil creadas la primera vez
+- [X] T080 [US15] Pantalla de entrada; mensaje genérico ante error; bloqueo de 15 minutos tras 5 intentos; cierre por 30 minutos sin uso y botón "Cerrar sesión"; nombre y rol arriba
+- [X] T081 [US16] Quitar el selector "Perfil": `currentRole()` sale de la sesión; margen, aprobaciones, crédito y respaldo masivo solo para jefe/a (pantalla y `storage.js`)
+- [X] T082 [US16] Vendedor/a: el campo "Vendedor" se llena solo y queda bloqueado; ve pedidos de otros en solo lectura (`canEditDocument`, también en `updateDocument` y `deleteDocument`); sus pedidos salen primero
+- [X] T083 [US16][US12] Historial de estados con el nombre de quien tenía la sesión; aprobaciones guardan el nombre de quien decidió
+- [X] T084 [US17] Pantalla "Equipo" solo para jefe/a: crear cuenta (correo único, contraseña de 8+ caracteres con número), desactivar/reactivar, restablecer contraseña; cambio obligatorio al entrar; no se puede desactivar al último jefe/a
+- [X] T085 [US17] Vendedores nuevos aparecen como opción en "Vendedor" y en los filtros
+- [X] T086 [US20] Panel: saludo con nombre y fecha, "Mis pendientes de hoy" (vendedor/a) o "Por revisar hoy" (jefe/a), clic que abre el pedido o el cliente, acciones con nombres de ventas y marca "Distribuidora Biobío"
+- [X] T087 [P][US15][US16][US17][US20] Pruebas de integración de la iteración 3 (17 nuevas; 159 en total, todas en verde)
+- [X] T088 `docs/usuarios-y-roles.md`, tabla `users` y `sales_order_status_history` en el MER y en `data-model.md`, README con cuentas de prueba
+- [ ] T089 [US18] Lista de clientes con buscador, orden por columna y ficha (Ezequiel)
+- [ ] T090 [US19] Tablero de pedidos por estado con botón "Avanzar" (Antonio)
+- [ ] T091 [US12] Días promedio entre `confirmado` y `despachado` en el panel (Antonio)
+- [ ] T092 Ensayo de la presentación con la página (todos)
 
 ## Dependencias
 

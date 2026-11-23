@@ -1,6 +1,6 @@
 # Modelo de Datos: Módulo de Ventas (Grupo 5)
 
-**Estado**: Implementado en el MVP (actualizado el 20 de octubre de 2026)
+**Estado**: Implementado en el MVP (actualizado el 23 de noviembre de 2026: tablas `users` y `sales_order_status_history`, columna `decision_comment`)
 **Fuente base**: `erp_data_model.md` (§4 *CRM*, §5 *Sales Module* y §9 mapa entre módulos), entregado por el equipo docente
 **Diagrama**: [`docs/mer.png`](../../docs/mer.png) (verde = base del curso, naranja = nuevo, gris = otro módulo) · vista simplificada: [`docs/mer-nucleo.png`](../../docs/mer-nucleo.png) · fuente Mermaid: [`docs/mer.mmd`](../../docs/mer.mmd)
 
@@ -21,7 +21,7 @@ El MER parte del modelo ERP del curso (`erp_data_model.md`) y del template *ERP 
 |---|---|---|
 | **Base Ventas** (verde) | `price_lists`, `price_list_items`, `sales_quotes`, `sales_quote_lines`, `sales_orders`, `sales_order_lines`, `returns_rma`, `rma_lines` | §5 *Sales Module*: las 8 tablas, con los mismos nombres de tablas y columnas |
 | **Base CRM, gestionada por Ventas** (verde) | `customers` | §4 *CRM Module*. Es verde porque Ventas la **crea y edita** (es la Entidad del template) y le agrega columnas comerciales |
-| **Nueva** (naranja) | `lost_reasons`, `discount_approvals` | No existen en el modelo del curso; se justifican en §3 y §4 |
+| **Nueva** (naranja) | `lost_reasons`, `discount_approvals`, `users`, `sales_order_status_history` | No existen en el modelo del curso; se justifican en §3, §4 y §4b |
 | **Otro módulo** (gris) | `employees` (RR.HH.), `addresses`, `currencies`, `tax_codes` (Core), `products` (Inventario), `opportunities` (CRM), `shipments` (Logística), `ar_invoices` (Finanzas) | §0, §1, §2, §3 y §4. Ventas solo las **lee** por FK; por eso `opportunities`, aunque es de CRM como `customers`, es gris |
 
 **Relaciones entre módulos que respeta el MER** (numeradas como en el §9 *Cross-Module Relationship Map* del modelo del curso)
@@ -57,6 +57,9 @@ La relación 47 del modelo del curso (Producción fabrica contra un pedido) no s
 | HU2 Cotizar con lista de precios | `sales_quotes`, `sales_quote_lines`, `price_lists`, `price_list_items`, `products` |
 | HU3 Confirmar respetando el crédito | `sales_orders`, `sales_order_lines`, `customers.credit_limit` |
 | HU4 Aprobar descuentos altos | `discount_approvals`, `employees` |
+| US-12 Historial de estados | `sales_order_status_history`, `users` |
+| US-15 / US-16 / US-17 Inicio de sesión, permisos y cuentas | `users`, `employees` |
+| US-20 Panel de inicio | `sales_quotes` (vigencia), `customers` (próximo contacto), `discount_approvals`, `sales_orders` |
 | HU5 Registrar por qué se pierde una venta | `lost_reasons`, `sales_quotes` |
 | HU6 Ver indicadores | agregados de `sales_orders`, `sales_order_lines`, `products.standard_cost` |
 | HU7 Buscar clientes y sus pedidos | `customers`, `sales_orders` |
@@ -270,10 +273,46 @@ La aprobación se pide **antes** de confirmar, cuando el documento todavía es c
 | discount_pct | DECIMAL | | Descuento solicitado |
 | reason | VARCHAR | | Motivo obligatorio (volumen, cliente estratégico, liquidación…) |
 | decision | VARCHAR | | `pendiente` → `aprobado` / `rechazado` |
+| decision_comment | VARCHAR | | **[Nuevo, iteración 3]** Por qué el jefe/a rechazó; obligatorio al rechazar. El vendedor/a lo ve en su pedido (M-03) |
 | requested_at | DATETIME | | Cuándo se pidió |
 | decided_at | DATETIME | | Cuándo se decidió |
 
-**Límite del MVP:** el "jefe/a" es un perfil simulado con un selector y `approved_by` guarda el nombre del perfil, no una persona autenticada. Con inicio de sesión real, `approved_by` y `requested_by` serán el `employee_id` de quien actuó.
+**Desde la iteración 3** `approved_by` es la persona que tenía la sesión abierta (US-16), ya no un perfil elegido en un selector. En el MVP se guarda su nombre; en producción, su `employee_id`.
+
+---
+
+## 4b. Cuentas e historial (iteración 3)
+
+### `users` [Nuevo]
+**Por qué existe:** hasta la iteración 2 el rol se elegía en un selector, así que cualquier vendedor podía ponerse "jefe/a" y aprobarse su propio descuento (la regla del 10 % no servía). Con una cuenta por persona el sistema sabe **quién** entró y **qué** puede hacer. La tabla vive en Ventas porque el modelo del curso no trae cuentas de usuario; se conecta 1 a 1 con `employees` de RR.HH., que sigue siendo la fuente de nombres.
+
+| Columna | Tipo | Llave | Descripción |
+|---|---|---|---|
+| user_id | INT | PK | Identificador de la cuenta |
+| employee_id | INT | FK → employees [Externo], única | Persona dueña de la cuenta (1 a 1) |
+| email | VARCHAR | Única | Correo para entrar, en minúsculas |
+| password_hash | CHAR(64) | | SHA-256 de `sal + contraseña`; nunca la contraseña |
+| salt | CHAR(32) | | Sal aleatoria propia de la cuenta |
+| role | VARCHAR | | `vendedor` o `jefe` |
+| active | BOOLEAN | | Se desactiva en vez de borrar (issue #25) |
+| failed_attempts | INT | | Intentos fallidos seguidos (5 → bloqueo) |
+| locked_until | DATETIME | | Hasta cuándo está bloqueada (15 minutos) |
+| must_change_password | BOOLEAN | | Debe cambiar la contraseña temporal al entrar |
+| last_login_at | DATETIME | | Último ingreso |
+
+**Reglas**: correo único; contraseña de 8+ caracteres con un número; no se puede desactivar al último jefe/a activo. Detalle de permisos por rol en [`docs/usuarios-y-roles.md`](../../docs/usuarios-y-roles.md).
+
+### `sales_order_status_history` [Nuevo]
+**Por qué existe:** el pedido guarda solo su estado actual. Sin historial no se sabe quién lo confirmó, cuándo se despachó ni cuánto se demora el ciclo. Cada cambio agrega una fila; nunca se edita ni se borra (igual que las aprobaciones, DR-04).
+
+| Columna | Tipo | Llave | Descripción |
+|---|---|---|---|
+| history_id | INT | PK | Identificador |
+| sales_order_id | INT | FK → sales_orders | Pedido (o cotización) que cambió |
+| from_status | VARCHAR | | Estado anterior (vacío cuando se crea) |
+| to_status | VARCHAR | | Estado nuevo |
+| changed_by | INT | FK → users | Quién tenía la sesión abierta |
+| changed_at | DATETIME | | Cuándo |
 
 ---
 

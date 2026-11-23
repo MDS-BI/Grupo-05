@@ -65,7 +65,7 @@ describe('User Story 13 - branded ERP workspace shell', () => {
     expect(qs('nav-entities-label').textContent).toBe('Entidades');
     expect(qs('nav-documents-label').textContent).toBe('Documentos');
     expect(qs('nav-search-label').textContent).toBe('Búsqueda');
-    expect(document.querySelectorAll('.nav-module').length).toBe(4);
+    expect(document.querySelectorAll('.nav-module:not([hidden])').length).toBe(4);
   });
 
   it('uses remapped terms on the sidebar for tailored modules', async () => {
@@ -79,7 +79,7 @@ describe('User Story 13 - branded ERP workspace shell', () => {
 
   it('keeps every module button labeled for accessible icon-rail collapse', async () => {
     await bootWith(undefined);
-    document.querySelectorAll('.nav-module').forEach(btn => {
+    document.querySelectorAll('.nav-module:not([hidden])').forEach(btn => {
       expect(btn.querySelector('.nav-label')).not.toBeNull();
       expect(btn.querySelector('.nav-label').textContent.length).toBeGreaterThan(0);
     });

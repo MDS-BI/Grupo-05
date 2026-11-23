@@ -30,6 +30,7 @@ Además de ordenar el trabajo diario, queremos que el módulo ayude a tomar mejo
 | Modelo entidad-relación y compatibilidad con la estructura base | [`docs/mer.png`](docs/mer.png) (diagrama) y [`specs/002-modulo-ventas/data-model.md`](specs/002-modulo-ventas/data-model.md) (tablas, columnas, justificación y compatibilidad) |
 | Plan del módulo (resumen, aspectos técnicos y fases) | [`specs/002-modulo-ventas/plan.md`](specs/002-modulo-ventas/plan.md) |
 | Historias de usuario (US) y reparto por persona (26 de octubre) | [`specs/002-modulo-ventas/spec.md`](specs/002-modulo-ventas/spec.md#historias-de-usuario-us) |
+| Iteración 3: usuarios y roles, inicio de sesión, cuentas del equipo y panel de inicio (23 de noviembre) | [`docs/usuarios-y-roles.md`](docs/usuarios-y-roles.md), [`spec.md`, iteración 3](specs/002-modulo-ventas/spec.md#iteración-3-16--29-nov-seguridad-y-pantallas-propias) y tareas T079 a T092 en [`tasks.md`](specs/002-modulo-ventas/tasks.md) |
 | Iteración 2: modificaciones, incremental y equipos (3 de noviembre) | [`spec.md`, iteración 2](specs/002-modulo-ventas/spec.md#iteración-2-3--16-nov-modificaciones-e-incremental), tareas T053 a T078 en [`tasks.md`](specs/002-modulo-ventas/tasks.md) y equipos en [`docs/plan-de-trabajo.md`](docs/plan-de-trabajo.md#equipos-de-la-iteración-2-3--16-nov) |
 
 ![Modelo entidad-relación del módulo de Ventas](docs/mer.png)
@@ -45,7 +46,7 @@ npm install
 npm run dev        # abre http://localhost:5173
 ```
 
-Pruebas automáticas (142: 111 del template + 31 de Ventas):
+Pruebas automáticas (159: 111 del template + 48 de Ventas, 17 de ellas de la iteración 3):
 
 ```bash
 npx vitest run     # una sola ejecución
@@ -53,13 +54,25 @@ npm test           # modo observación
 npm run build      # versión de producción en dist/
 ```
 
+## Cuentas de prueba
+
+Al abrir la app aparece la pantalla de entrada. Las cuentas son ficticias y se crean solas la primera vez (las contraseñas se guardan con hash, nunca como texto).
+
+| Rol | Correo | Contraseña |
+|---|---|---|
+| Jefe/a de ventas (Andrea Lagos) | `jefa@biobio.cl` | `Jefa2026` |
+| Vendedor/a (Camila Rojas) | `camila@biobio.cl` | `Venta2026` |
+| Vendedor/a (Diego, Valentina, Matías) | `diego@biobio.cl`, `valentina@biobio.cl`, `matias@biobio.cl` | `Venta2026` |
+
+Qué puede hacer cada rol: [`docs/usuarios-y-roles.md`](docs/usuarios-y-roles.md).
+
 ## Demostración en 3 minutos
 
-1. Arriba a la derecha, cambia el **Perfil** a *Jefe/a de ventas*: aparecen el margen bruto, los botones para aprobar descuentos y los de datos.
-2. En el **Panel**, presiona **Cargar datos de demostración** (10 clientes y ~40 pedidos ficticios; solo el jefe/a ve este botón).
-3. En **Pedidos de Venta**, elige un cliente, agrega productos y pon 15 % de descuento en uno. Escribe el motivo del descuento, guarda e intenta confirmar: queda bloqueado hasta que se apruebe.
-4. Aprueba la solicitud en el Panel y confirma el pedido.
-5. En **Clientes**, prueba un RUT inválido (`12.345.678-9`) y revisa el crédito usado y disponible.
+1. Entra como **jefa** (`jefa@biobio.cl` / `Jefa2026`) y presiona **Cargar datos de demostración** (10 clientes y ~40 pedidos ficticios; solo el jefe/a ve este botón).
+2. **Cierra sesión** y entra como **Camila** (`camila@biobio.cl` / `Venta2026`): el panel la saluda y muestra sus pendientes del día. No ve el margen ni los botones de datos.
+3. En **Pedidos de Venta**, crea una cotización con 15 % de descuento en un producto: el campo "Vendedor" ya dice Camila. Escribe el motivo y guarda. Si abres un pedido de Diego, se puede mirar pero no modificar.
+4. Vuelve a entrar como jefa: en el panel aparece "Aprobar descuento…". Recházalo con un comentario o apruébalo. Luego Camila ve el comentario en su pedido y el historial de estados con el nombre de cada persona.
+5. Como jefa, abre **Equipo**: crea una cuenta, desactívala y prueba que ya no puede entrar. Prueba también 5 contraseñas malas seguidas: la cuenta se bloquea 15 minutos.
 
 Recorrido detallado: [specs/002-modulo-ventas/quickstart.md](specs/002-modulo-ventas/quickstart.md).
 
@@ -70,7 +83,9 @@ Recorrido detallado: [specs/002-modulo-ventas/quickstart.md](specs/002-modulo-ve
 | [docs/plan-de-trabajo.md](docs/plan-de-trabajo.md) | Acuerdos del grupo: roles, permisos de cada perfil, cronograma y forma de trabajo |
 | [docs/propuesta-mvp.md](docs/propuesta-mvp.md) | Problema, cliente, usuarios y alcance del MVP |
 | [docs/mer.png](docs/mer.png) | Modelo entidad-relación ([fuente Mermaid](docs/mer.mmd)) |
-| [specs/002-modulo-ventas/spec.md](specs/002-modulo-ventas/spec.md) | Especificación: historias de usuario (US-01 a US-14) con su responsable, requisitos y criterios de éxito |
+| [docs/usuarios-y-roles.md](docs/usuarios-y-roles.md) | Usuarios, permisos de cada rol, reglas de la cuenta y cuentas de prueba |
+| [specs/002-modulo-ventas/spec.md](specs/002-modulo-ventas/spec.md) | Especificación: historias de usuario (US-01 a US-20) con su responsable, requisitos y criterios de éxito |
+| [docs/historias-de-usuario/](docs/historias-de-usuario/) | Historias de la iteración 3 (US-15 a US-20), una por integrante |
 | [specs/002-modulo-ventas/plan.md](specs/002-modulo-ventas/plan.md) | Plan técnico y estructura del código |
 | [specs/002-modulo-ventas/research.md](specs/002-modulo-ventas/research.md) | Decisiones técnicas y alternativas descartadas |
 | [specs/002-modulo-ventas/data-model.md](specs/002-modulo-ventas/data-model.md) | Tablas, columnas, justificación y mapeo a `localStorage` |
@@ -89,8 +104,9 @@ Recorrido detallado: [specs/002-modulo-ventas/quickstart.md](specs/002-modulo-ve
 src/profiles/ventas.js     # todo lo específico de Ventas: términos, campos, estados, catálogo
 src/sales/sales-logic.js   # reglas puras: RUT, totales, crédito, indicadores, pronóstico
 src/sales/demo-data.js     # datos ficticios deterministas
-src/storage.js             # guardar, validar, aprobaciones, exportar/importar
-src/components/            # pantallas: panel, clientes, pedidos, búsqueda
+src/storage.js             # guardar, validar, aprobaciones, historial de estados, exportar/importar
+src/auth.js                # cuentas, contraseñas con hash, sesión y permisos por rol
+src/components/            # pantallas: panel, clientes, pedidos, búsqueda, equipo
 tests/                     # pruebas unitarias y de integración
 ```
 

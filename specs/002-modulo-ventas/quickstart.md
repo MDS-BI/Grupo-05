@@ -18,7 +18,7 @@ Abre la dirección que muestra la terminal (normalmente http://localhost:5173).
 
 ## Recorrido de demostración (≈ 3 minutos)
 
-1. Arriba a la derecha, cambia el **Perfil** a *Jefe/a de ventas*: aparecen el **margen bruto**, los botones para aprobar descuentos y los de datos (cargar demo, exportar, importar, borrar).
+1. Entra como **jefa de ventas** (`jefa@biobio.cl` / `Jefa2026`): aparecen el **margen bruto**, los botones para aprobar descuentos, los de datos (cargar demo, exportar, importar, borrar) y el menú **Equipo**. Las cuentas de vendedor (`camila@biobio.cl` y otras, contraseña `Venta2026`) no ven nada de eso.
 2. En el **Panel**, presiona **Cargar datos de demostración** (todos los datos son ficticios).
 3. Revisa los indicadores, el top 5 de clientes, los motivos de pérdida y el gráfico con pronóstico.
 4. Ve a **Pedidos de Venta**:

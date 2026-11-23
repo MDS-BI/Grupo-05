@@ -38,8 +38,10 @@ Por el feedback del avance 02 nos dividimos en dos equipos. El detalle de cada a
 | Aprobar o rechazar descuentos | No | Sí |
 | Ver margen y costo | No | Sí |
 | Cargar datos de demostración, exportar, importar o borrar todos los datos | No | Sí |
+| Modificar pedidos de otro vendedor/a | No (solo mirarlos) | Sí |
+| Administrar cuentas del equipo | No | Sí |
 
-En el MVP los perfiles se eligen con un selector, sin contraseña, porque es solo frontend. En producción habrá inicio de sesión y cada vendedor verá solo su cartera (ver [`analisis-escalabilidad.md`](analisis-escalabilidad.md)).
+Desde la iteración 3 cada persona entra con su cuenta y el rol sale de la cuenta, ya no de un selector. Detalle completo en [`usuarios-y-roles.md`](usuarios-y-roles.md).
 
 ## Cronograma
 

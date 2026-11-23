@@ -3,10 +3,14 @@
 
 import { getConfig, customFieldsFor, labelFor, grammar } from './module-config.js';
 import { isValidRut, cleanRut, formatRut, validateLines, computeTotals, creditCheck, requiresApproval, maxDiscountPct } from './sales/sales-logic.js';
+import { currentRole, currentUser, currentUserName, authEnabled } from './auth.js';
+
+export { currentRole };
 
 export const ENTITY_KEY = 'erp_base_module:entities';
 export const DOCUMENT_KEY = 'erp_base_module:documents';
 export const APPROVAL_KEY = 'erp_base_module:discount_approvals';
+export const STATUS_HISTORY_KEY = 'erp_base_module:status_history';
 
 // ---------------------------------------------------------------------------
 // Utilidades
@@ -161,10 +165,20 @@ export function updateEntity(id, changes){
   return updated;
 }
 
-/** Perfil simulado del MVP (vendedor / jefe). En producción vendrá del inicio de sesión. */
-export const ROLE_KEY = 'erp_base_module:role';
-export function currentRole(){
-  try { return localStorage.getItem(ROLE_KEY) || 'vendedor'; } catch { return 'vendedor'; }
+/**
+ * US-16: un vendedor/a puede mirar los pedidos de otros, pero solo modifica los suyos.
+ * La regla vive aquí (no solo en la pantalla) para que no se salte desde la consola.
+ */
+export function canEditDocument(doc){
+  if(!getConfig().sales || !authEnabled() || !doc) return true;
+  const me = currentUser();
+  if(!me) return false;
+  if(me.role === 'jefe') return true;
+  return !doc.vendedor || doc.vendedor === me.name;
+}
+
+function assertCanEdit(doc){
+  if(!canEditDocument(doc)) throw new Error(`Este pedido es de ${doc.vendedor}. Puedes mirarlo, pero solo su vendedor/a o el jefe/a lo pueden modificar.`);
 }
 
 export function deleteEntity(id){
@@ -350,6 +364,9 @@ function failWith(errors){
 }
 
 export function addDocument(input){
+  const sales = getConfig().sales;
+  const me = sales && authEnabled() ? currentUser() : null;
+  if(me && me.role === 'vendedor') input = { ...input, vendedor: me.name };
   const { valid, errors } = validateDocument(input);
   if(!valid) throw failWith(errors);
   const ts = now();
@@ -357,6 +374,7 @@ export function addDocument(input){
   const all = loadDocuments();
   all.push(doc);
   write(DOCUMENT_KEY, all);
+  if(sales && doc.status) recordStatusChange(doc.id, '', doc.status);
   return doc;
 }
 
@@ -372,6 +390,11 @@ export function updateDocument(id, changes){
   const idx = all.findIndex(d => d.id === id);
   if(idx === -1) throw new Error('Documento no encontrado.');
   const current = all[idx];
+  assertCanEdit(current);
+  const me = getConfig().sales && authEnabled() ? currentUser() : null;
+  if(me && me.role === 'vendedor' && 'vendedor' in changes && changes.vendedor !== current.vendedor){
+    changes = { ...changes, vendedor: current.vendedor || me.name };
+  }
   const lc = getConfig().statusLifecycle;
   if(lc && 'status' in changes && !isBlank(current.status) && changes.status !== current.status){
     const allowed = lc.transitions[current.status] || [];
@@ -390,6 +413,7 @@ export function updateDocument(id, changes){
   const updated = { ...current, ...buildDocumentFields(merged), id: current.id, updatedAt: now() };
   all[idx] = updated;
   write(DOCUMENT_KEY, all);
+  if(sales && updated.status !== current.status) recordStatusChange(updated.id, current.status || '', updated.status);
   return updated;
 }
 
@@ -397,6 +421,7 @@ export function deleteDocument(id){
   const all = loadDocuments();
   const sales = getConfig().sales;
   const target = all.find(d => d.id === id);
+  if(target) assertCanEdit(target);
   if(sales && target && !sales.openStatuses.includes(target.status)){
     throw new Error(`Un documento en estado "${target.status}" no se elimina: queda en la historia (si corresponde, anúlalo).`);
   }
@@ -444,13 +469,17 @@ export function requestApproval(docId, discountPct, reason){
   return record;
 }
 
-export function decideApproval(approvalId, decision, approver){
+export function decideApproval(approvalId, decision, approver, comment = ''){
   if(getConfig().sales && currentRole() !== 'jefe') throw new Error('Solo el jefe/a de ventas puede aprobar o rechazar descuentos.');
   if(decision !== 'aprobado' && decision !== 'rechazado') throw new Error('La decisión debe ser "aprobado" o "rechazado".');
+  if(decision === 'rechazado' && getConfig().sales && authEnabled() && !trimmed(comment)){
+    throw new Error('Escribe por qué rechazas el descuento: el vendedor/a lo verá en su pedido.');
+  }
   const all = loadApprovals();
   const idx = all.findIndex(a => a.approval_id === approvalId);
   if(idx === -1) throw new Error('Solicitud no encontrada.');
-  all[idx] = { ...all[idx], decision, approved_by: trimmed(approver), decided_at: now() };
+  const who = authEnabled() ? currentUserName() : trimmed(approver);
+  all[idx] = { ...all[idx], decision, approved_by: who || trimmed(approver), decision_comment: trimmed(comment), decided_at: now() };
   write(APPROVAL_KEY, all);
   return all[idx];
 }
@@ -460,15 +489,37 @@ export function pendingApprovals(){
 }
 
 // ---------------------------------------------------------------------------
+// Historial de estados (sales_order_status_history, US-12): solo se agrega, nunca se edita
+// ---------------------------------------------------------------------------
+
+function recordStatusChange(docId, from, to){
+  const entry = {
+    history_id: generateId('his'),
+    sales_order_id: docId,
+    from_status: from,
+    to_status: to,
+    changed_by: currentUserName() || 'Sin sesión',
+    changed_at: now()
+  };
+  write(STATUS_HISTORY_KEY, [...read(STATUS_HISTORY_KEY), entry]);
+  return entry;
+}
+
+export function statusHistory(docId){
+  return read(STATUS_HISTORY_KEY).filter(h => h.sales_order_id === docId);
+}
+
+// ---------------------------------------------------------------------------
 
 export function clearAll(){
   localStorage.removeItem(ENTITY_KEY);
   localStorage.removeItem(DOCUMENT_KEY);
   localStorage.removeItem(APPROVAL_KEY);
+  localStorage.removeItem(STATUS_HISTORY_KEY);
 }
 
 export function exportData(){
-  return { entities: loadEntities(), documents: loadDocuments(), discount_approvals: loadApprovals(), exportedAt: now() };
+  return { entities: loadEntities(), documents: loadDocuments(), discount_approvals: loadApprovals(), status_history: read(STATUS_HISTORY_KEY), exportedAt: now() };
 }
 
 export function importData(data){
@@ -476,4 +527,5 @@ export function importData(data){
   write(ENTITY_KEY, data.entities);
   write(DOCUMENT_KEY, data.documents);
   write(APPROVAL_KEY, Array.isArray(data.discount_approvals) ? data.discount_approvals : []);
+  write(STATUS_HISTORY_KEY, Array.isArray(data.status_history) ? data.status_history : []);
 }

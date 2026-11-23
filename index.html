@@ -12,14 +12,35 @@
       <span id="logo-mark" class="logo-mark" aria-hidden="true"></span>
       <span id="brand-name" class="brand-name">Módulo Base ERP</span>
     </div>
-    <div id="role-switch" class="role-switch" hidden>
-      <label for="role-select">Perfil</label>
-      <select id="role-select">
-        <option value="vendedor">Vendedor/a</option>
-        <option value="jefe">Jefe/a de ventas</option>
-      </select>
+    <div id="user-box" class="user-box" hidden>
+      <span class="user-text"><span id="user-name" class="user-name"></span><span id="user-role" class="user-role"></span></span>
+      <button type="button" id="logout-button" class="secondary small">Cerrar sesión</button>
     </div>
   </header>
+
+  <!-- ===================== INICIO DE SESIÓN (US-15) ===================== -->
+  <section id="login-view" class="login-view" aria-labelledby="login-heading" hidden>
+    <form id="login-form" class="login-card" novalidate>
+      <span id="login-logo" class="logo-mark login-logo" aria-hidden="true"></span>
+      <h1 id="login-heading">Distribuidora Biobío</h1>
+      <p class="muted">Módulo de Ventas · entra con tu cuenta</p>
+      <div class="field"><label for="login-email">Correo</label><input id="login-email" type="email" autocomplete="username" /></div>
+      <div class="field"><label for="login-password">Contraseña</label><input id="login-password" type="password" autocomplete="current-password" /></div>
+      <p id="login-error" class="error" role="alert"></p>
+      <button type="submit" id="login-submit">Entrar</button>
+      <details class="login-help">
+        <summary>Cuentas de prueba</summary>
+        <p class="muted">Jefa de ventas: <code>jefa@biobio.cl</code> / <code>Jefa2026</code><br>Vendedores: <code>camila@biobio.cl</code>, <code>diego@biobio.cl</code>, <code>valentina@biobio.cl</code> o <code>matias@biobio.cl</code> / <code>Venta2026</code></p>
+      </details>
+    </form>
+    <form id="change-password-form" class="login-card" novalidate hidden>
+      <h1>Cambia tu contraseña</h1>
+      <p class="muted">Tu jefe/a te dio una contraseña temporal. Elige una nueva para seguir (al menos 8 caracteres y un número).</p>
+      <div class="field"><label for="new-password">Nueva contraseña</label><input id="new-password" type="password" autocomplete="new-password" /></div>
+      <p id="change-password-error" class="error" role="alert"></p>
+      <button type="submit" id="change-password-submit">Guardar y entrar</button>
+    </form>
+  </section>
 
   <div class="workspace">
     <nav class="sidebar" aria-label="Módulos">
@@ -35,6 +56,9 @@
       <button type="button" id="nav-search" class="nav-module" data-module="search">
         <span class="nav-icon" aria-hidden="true">⌕</span><span id="nav-search-label" class="nav-label">Búsqueda</span>
       </button>
+      <button type="button" id="nav-team" class="nav-module" data-module="team" hidden>
+        <span class="nav-icon" aria-hidden="true">☺</span><span class="nav-label">Equipo</span>
+      </button>
     </nav>
 
     <main class="content">
@@ -45,6 +69,12 @@
       <section id="view-dashboard" class="view" aria-labelledby="dashboard-heading">
         <h1 id="dashboard-heading">Módulo Base ERP</h1>
         <p class="lead" id="dashboard-lead">Elige una acción para comenzar.</p>
+
+        <section id="my-pending" class="panel pending-panel" aria-labelledby="pending-heading" hidden>
+          <h2 id="pending-heading">Mis pendientes de hoy</h2>
+          <ul id="pending-list" class="plain-list pending-list"></ul>
+          <p id="pending-empty" class="muted" hidden>No tienes nada pendiente para hoy.</p>
+        </section>
 
         <div class="quick-actions">
           <button type="button" id="action-new-entity" class="action-card">
@@ -159,6 +189,10 @@
 
         <div class="card">
           <h2 id="edit-document-heading">Editar o eliminar el documento</h2>
+          <div class="row filters" id="document-filters" hidden>
+            <label for="filter-status">Estado</label><select id="filter-status"></select>
+            <label for="filter-seller">Vendedor/a</label><select id="filter-seller"></select>
+          </div>
           <div class="row">
             <label for="edit-document" class="sr-only">Seleccionar documento</label>
             <select id="edit-document"></select>
@@ -210,6 +244,11 @@
             <legend>Campos del módulo</legend>
             <div class="grid" id="document-custom-fields-grid"></div>
           </fieldset>
+          <p id="document-readonly" class="info" hidden></p>
+          <section id="status-history" class="history" hidden>
+            <h3>Historial de estados</h3>
+            <ol id="status-history-list" class="plain-list"></ol>
+          </section>
           <div class="actions">
             <button type="submit" id="document-submit-button">Guardar Documento</button>
             <button type="button" id="reset-document" class="secondary">Limpiar</button>
@@ -227,6 +266,31 @@
           <ul id="search-results-list" class="results"></ul>
           <p id="search-empty" class="empty">No hay coincidencias. Prueba con otro término.</p>
         </div>
+      </section>
+      <!-- ===================== EQUIPO (US-17) ===================== -->
+      <section id="view-team" class="view" aria-labelledby="team-heading" hidden>
+        <h1 id="team-heading">Equipo</h1>
+        <p class="lead">Cuentas de las personas que usan el módulo. Las cuentas no se borran: se desactivan, para no perder de quién es cada pedido.</p>
+        <div class="card">
+          <h2>Cuentas</h2>
+          <div class="table-wrap">
+            <table class="team-table">
+              <thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Último ingreso</th><th><span class="sr-only">Acciones</span></th></tr></thead>
+              <tbody id="team-body"></tbody>
+            </table>
+          </div>
+          <p id="team-message" class="error" role="alert"></p>
+        </div>
+        <form id="team-form" class="card" novalidate>
+          <h2>Crear una cuenta</h2>
+          <div class="grid">
+            <div class="field"><label for="team-name">Nombre *</label><input id="team-name" autocomplete="off" /><span id="error-team-name" class="error"></span></div>
+            <div class="field"><label for="team-email">Correo *</label><input id="team-email" type="email" autocomplete="off" /><span id="error-team-email" class="error"></span></div>
+            <div class="field"><label for="team-role">Rol *</label><select id="team-role"><option value="vendedor">Vendedor/a</option><option value="jefe">Jefe/a de ventas</option></select><span id="error-team-role" class="error"></span></div>
+            <div class="field"><label for="team-password">Contraseña inicial *</label><input id="team-password" type="text" autocomplete="off" placeholder="8+ caracteres y un número" /><span id="error-team-password" class="error"></span></div>
+          </div>
+          <div class="actions"><button type="submit" id="team-submit">Crear cuenta</button></div>
+        </form>
       </section>
     </main>
   </div>

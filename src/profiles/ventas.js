@@ -3,6 +3,7 @@
 
 export const ventasProfile = {
   moduleName: 'Ventas',
+  companyName: 'Distribuidora Biobío',
 
   labels: {
     entity: 'Cliente',
@@ -71,6 +72,15 @@ export const ventasProfile = {
     lostStatus: 'perdida',
     lostReasonField: 'motivoPerdida',
     sellers: ['Camila Rojas', 'Diego Muñoz', 'Valentina Soto', 'Matías Fuentes'],
+    // Cuentas de prueba (US-15). Las contraseñas se guardan con hash + sal la primera vez
+    // que se abre la app; estas son solo para probar el prototipo y están en el README.
+    accounts: [
+      { name: 'Andrea Lagos', email: 'jefa@biobio.cl', role: 'jefe', password: 'Jefa2026' },
+      { name: 'Camila Rojas', email: 'camila@biobio.cl', role: 'vendedor', password: 'Venta2026' },
+      { name: 'Diego Muñoz', email: 'diego@biobio.cl', role: 'vendedor', password: 'Venta2026' },
+      { name: 'Valentina Soto', email: 'valentina@biobio.cl', role: 'vendedor', password: 'Venta2026' },
+      { name: 'Matías Fuentes', email: 'matias@biobio.cl', role: 'vendedor', password: 'Venta2026' }
+    ],
     lostReasons: ['Precio', 'Plazo de entrega', 'Sin stock', 'Competencia', 'Otro'],
     // Lista de precios vigente (price_list_items). Precios netos en CLP.
     products: [

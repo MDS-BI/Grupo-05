@@ -44,6 +44,14 @@ Cada decisión indica qué elegimos, por qué y qué alternativas se descartaron
 **Decisión**: un selector en la barra superior; el vendedor no ve margen ni aprueba.
 **Por qué**: el MVP es solo frontend y no tiene inicio de sesión. Igual demostramos el **principio de mínimo privilegio** sobre datos sensibles (costos y margen).
 **Limitación conocida**: cualquiera puede cambiar el selector. Es una demostración del diseño, no una medida de seguridad.
+**Reemplazada en la iteración 3 por D8b.**
+
+## D8b. Inicio de sesión en el navegador (iteración 3, 23 nov)
+
+**Decisión**: cuentas en `localStorage` (`erp_base_module:users`), contraseña con SHA-256 y una sal por cuenta usando Web Crypto (viene en el navegador, sin dependencias nuevas), sesión con cierre a los 30 minutos sin uso y bloqueo de 15 minutos tras 5 intentos fallidos. Las reglas por rol se revisan en la pantalla **y** en `storage.js`/`auth.js`.
+**Alternativas**: (1) seguir con el selector: no cumple lo que pidió el profe; (2) servidor con base de datos: se sale del alcance (solo frontend); (3) guardar la contraseña tal cual: cualquiera la lee en las herramientas del navegador.
+**Por qué**: con cuentas reales el sistema sabe quién aprueba y quién cambia cada pedido, y la regla del 10 % por fin se cumple. Issues #27 (hash y sal), #25 (desactivar en vez de borrar) y #31 (login en vez de selector).
+**Limitación conocida**: sigue siendo un prototipo: los datos están en el navegador. En producción, cuentas y reglas van en un servidor con HTTPS y un hash lento (bcrypt o Argon2).
 
 ## D9. Pronóstico simple y explicable
 

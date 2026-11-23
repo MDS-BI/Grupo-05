@@ -8,7 +8,7 @@ La pregunta: **¿qué pasa si el módulo crece en usuarios, en datos o en módul
 |---|---|---|
 | Almacenamiento | `localStorage` del navegador | ~5 MB por sitio. Un pedido con 3 líneas pesa ~1 kB → caben unos **4.000–5.000 pedidos** |
 | Usuarios | 1 navegador = 1 usuario | No hay datos compartidos: dos vendedores ven bases distintas |
-| Seguridad | Perfiles simulados | Cualquiera puede cambiar de perfil; los datos se leen desde el navegador |
+| Seguridad | Cuentas con contraseña (hash y sal), roles y cierre por inactividad (iteración 3) | Las cuentas y los datos siguen en el navegador: alguien con acceso al computador podría leerlos. En producción van en un servidor |
 | Rendimiento | Búsqueda y panel recorren todo en memoria | Fluido con 500+ clientes (probado por el template); se nota sobre ~10.000 pedidos |
 
 Conclusión: sirve para **demostrar** y para una sola persona. No sirve para una empresa real.
