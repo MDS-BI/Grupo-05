@@ -58,6 +58,7 @@ Escribimos cada historia con el formato **"Como [usuario], quiero [acción], par
 | US-13 | Fijar metas mensuales por vendedor | Jefe/a de ventas | P3 | 3 (17 – 29 nov) | Pendiente |
 | US-14 | Ver el stock antes de confirmar | Vendedor/a | P3 | 3 (17 – 29 nov) | Pendiente |
 | US-15 | Iniciar y cerrar sesión con mi cuenta | Vendedor/a y Jefe/a de ventas | P1 | 3 (16 – 22 nov) | Pendiente |
+| US-16 | Ver y hacer solo lo que le toca a mi rol | Jefe/a de ventas | P1 | 3 (16 – 22 nov) | En curso · permisos en `storage.js` hechos; falta conectar con US-15 |
 
 ### Iteración 2 (3 – 16 nov): modificaciones e incremental
 
@@ -352,6 +353,32 @@ US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov), junto con US-15 (1
 
 ---
 
+### Historia de Usuario 16 (US-16): Ver y hacer solo lo que le toca a mi rol (Prioridad: P1) · Iteración 3 (16–22 nov) · Pedro Pablo Chávez
+
+**Como** jefe/a de ventas, **quiero** que cada cuenta tenga un rol (vendedor/a o jefe/a) y que el sistema muestre y deje hacer solo lo que corresponde a ese rol, **para** que un vendedor no pueda aprobar sus propios descuentos ni ver costos y márgenes.
+
+**Por qué es P1**: ya hay reglas que dependen del rol (solo el jefe/a aprueba descuentos sobre 10 % en US-04 y solo el jefe/a ve el margen, DR-03), pero hoy el rol sale del selector "Perfil" y cualquiera se lo cambia, incluso desde la consola del navegador. Si el rol sale de la cuenta con la que se entró (US-15), esas reglas se cumplen de verdad.
+
+**Cómo se prueba sola**: entrar como vendedor/a, abrir un pedido con un descuento pendiente y ver que no aparecen "Aprobar" ni "Rechazar". Después entrar como jefe/a y aprobarlo.
+
+**Depende de**: US-15 (la sesión entrega el nombre y el rol). **Decisión**: #31 (reemplaza la #9).
+
+**Tablas**: users (columna `role`), discount_approvals, sales_orders, sales_order_status_history (US-12).
+
+**Criterios de aceptación**:
+
+1. **Dado** que entré con mi cuenta, **cuando** miro la barra de arriba, **entonces** ya no está el selector "Perfil": mi rol sale de mi cuenta y no lo puedo cambiar.
+2. **Dada** una cuenta de vendedor/a, **cuando** abro un pedido con un descuento pendiente, **entonces** no veo los botones "Aprobar" ni "Rechazar", y tampoco veo el costo ni el margen.
+3. **Dada** una cuenta de vendedor/a, **cuando** creo una cotización, **entonces** el campo "Vendedor" se llena solo con mi nombre y no lo puedo cambiar.
+4. **Dada** una cuenta de vendedor/a, **cuando** abro "Pedidos", **entonces** veo mis pedidos primero. Puedo mirar los de otros vendedores, pero solo puedo editar los míos.
+5. **Dado** cualquier cambio de estado o cualquier aprobación, **cuando** se guarda, **entonces** queda registrado con el nombre de la persona que tenía la sesión abierta, y se ve en el historial del pedido (US-12).
+6. **Dada** una cuenta de vendedor/a, **cuando** abro el panel, **entonces** no aparecen "Borrar todos los datos" ni "Importar datos". Eso queda solo para el jefe/a.
+7. **Dada** una cuenta de jefe/a, **cuando** entro, **entonces** veo todo, incluido el margen y los descuentos por aprobar.
+
+**Nota**: no basta con esconder los botones. Las funciones de `storage.js` que aprueban descuentos, borran, importan o exportan datos y editan pedidos revisan el rol de quien tiene la sesión abierta, para que no se puedan saltar desde la consola del navegador (prueba en `tests/integration/permisos-por-rol.test.js`).
+
+---
+
 ### Casos Límite
 
 - Cliente sin límite de crédito: no se bloquea por crédito (se asume contado o crédito sin tope).
@@ -415,6 +442,14 @@ US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov), junto con US-15 (1
 - **FR-V34** (US-15): Tras 5 intentos fallidos consecutivos para una misma cuenta, el sistema DEBE bloquear el ingreso por 15 minutos e informar el tiempo restante.
 - **FR-V35** (US-15): El sistema DEBE permitir cerrar sesión manualmente y cerrar automáticamente la sesión tras 30 minutos de inactividad.
 - **FR-V36** (US-15): Las contraseñas DEBEN almacenarse únicamente en forma protegida (hash), nunca en texto legible.
+
+**Requisitos incrementales de permisos por rol** (US-16, Iteración 3):
+
+- **FR-V37** (US-16): El rol DEBE salir de la cuenta con la sesión abierta; el selector manual "Perfil" DEBE eliminarse.
+- **FR-V38** (US-16): Decidir descuentos, ver costo y margen, cambiar el límite de crédito, cargar la demo e importar, exportar o borrar datos DEBEN quedar solo para jefe/a, y el permiso DEBE revisarse dentro de la función que hace la acción, no solo en la interfaz.
+- **FR-V39** (US-16): Un vendedor/a DEBE crear documentos siempre a su nombre, ver primero los suyos, poder mirar los de otros y editar o eliminar solo los propios.
+- **FR-V40** (US-16): Cada aprobación de descuento y cada cambio de estado DEBEN guardar el nombre de quien tenía la sesión abierta.
+- **FR-V41** (US-16): Sin sesión, el sistema DEBE tratar al usuario con los permisos mínimos (ninguna acción de jefatura).
 
 ### Requisitos de Datos y Privacidad
 

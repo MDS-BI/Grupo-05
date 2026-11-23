@@ -138,6 +138,19 @@ Funcionalidad nueva. Detalle y criterios en [`spec.md`](spec.md#incremental-func
 - [ ] T077 Unir todo en `main`, correr `npx vitest run` (todas en verde) y revisar a mano con `npm run dev` en los dos perfiles
 - [ ] T078 Actualizar el estado de las historias en `spec.md`, las capturas de `docs/capturas/` y el README
 
+## Fase 15: Iteración 3, US-16 permisos por rol (Pedro)
+
+Detalle y criterios en [`spec.md`](spec.md) (US-16, FR-V37 a FR-V41). Depende de US-15 para los pasos de interfaz.
+
+- [X] T079 [US16] Reglas de permisos como funciones puras en `src/auth/permissions.js` (`can`, `assertCan`, `canEditDocument`, `ownFirst`) (Pedro)
+- [X] T080 [US16] `currentUser()` y `setCurrentUserProvider()` en `storage.js`; revisar el rol dentro de `decideApproval`, `clearAll`, `importData` y `exportData`; vendedor/a crea a su nombre y edita o elimina solo lo suyo; aprobaciones con el nombre de la sesión (Pedro)
+- [X] T081 [P][US16] Pruebas: `tests/unit/permissions.test.js` y `tests/integration/permisos-por-rol.test.js` (incluye intentar aprobar desde la consola) (Pedro)
+- [ ] T082 [US16] Conectar la sesión de US-15 con `setCurrentUserProvider(() => ({ name, role }))` al entrar y `() => null` al salir (Pedro, con Francisca)
+- [ ] T083 [US16] Sacar el selector "Perfil" de `index.html` y de `dashboard.js`; cambiar a `can(...)` los `currentRole() !== 'jefe'` que quedan (Pedro)
+- [ ] T084 [US16] Campo "Vendedor" bloqueado y con el nombre de la sesión para el vendedor/a; selector de pedidos con los propios primero (`ownFirst`) y guardar/eliminar desactivados en pedidos ajenos (Pedro)
+- [ ] T085 [US16] Guardar el nombre de la sesión en cada cambio de estado del historial (depende de T073, US-12) (Pedro, con Antonio)
+- [ ] T086 [P][US16] Actualizar las pruebas que usan el selector "Perfil" para que entren con una cuenta (Pedro)
+
 ## Dependencias
 
-Fase 2 → Fase 3 → (Fases 4 a 9, en orden de prioridad) → Fase 10 → Fase 11 → (Fases 12 y 13 en paralelo) → Fase 14. Dentro de cada fase, las tareas [P] pueden repartirse entre integrantes. T072 (tabla en el MER) va antes de T073.
+Fase 2 → Fase 3 → (Fases 4 a 9, en orden de prioridad) → Fase 10 → Fase 11 → (Fases 12 y 13 en paralelo) → Fase 14. Dentro de cada fase, las tareas [P] pueden repartirse entre integrantes. T072 (tabla en el MER) va antes de T073. En la Fase 15, T082 a T084 necesitan US-15 en `main`, y T085 necesita T073.
