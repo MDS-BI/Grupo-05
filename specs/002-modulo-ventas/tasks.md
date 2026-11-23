@@ -103,9 +103,9 @@
 
 Ajustes a historias que ya funcionan. Detalle y criterios en [`spec.md`](spec.md#modificaciones-ajustes-a-historias-que-ya-existen).
 
-- [ ] T053 [M-01][US2] Mostrar subtotal, descuento, IVA y total con formato de pesos usando `money()` de `format.js`, sin cambiar el valor guardado (Pedro)
-- [ ] T054 [M-02][US3] Estilo de campo deshabilitado en `styles.css` y ocultar la ✕ de las líneas cuando el documento está cerrado (`setLinesLocked` en `document-form.js`) (Pedro)
-- [ ] T055 [P][M-01][M-02] Pruebas: montos formateados y campos bloqueados en un pedido facturado (Pedro)
+- [X] T053 [M-01][US2] Mostrar subtotal, descuento, IVA y total con formato de pesos usando `money()` de `format.js`, sin cambiar el valor guardado (Pedro)
+- [X] T054 [M-02][US3] Estilo de campo deshabilitado en `styles.css` y ocultar la ✕ de las líneas cuando el documento está cerrado (`setLinesLocked` en `document-form.js`) (Pedro)
+- [X] T055 [P][M-01][M-02] Pruebas: montos formateados y campos bloqueados en un pedido facturado (Pedro)
 - [ ] T056 [M-03][US4] Cargar en el formulario el motivo de la última solicitud de descuento (`latestApproval`) (Sebastián)
 - [ ] T057 [M-03][US4] Pedir un comentario obligatorio al rechazar en el panel; guardarlo en `discount_approvals` (columna nueva `decision_comment`, avisar a Joaquín para el MER) y mostrarlo en el pedido (Sebastián)
 - [ ] T058 [M-06][US3] Filtro por estado y por vendedor sobre el selector de pedidos (Sebastián)

@@ -100,10 +100,11 @@ describe('Historia: cotizar y confirmar un pedido', () => {
     const c = createCustomer();
     fillOrder(c, { quantity: 10, discountPct: 5 });
     // TOR-001 cuesta $4.990: bruto 49.900, descuento 2.495, neto 47.405, IVA 9.007, total 56.412
-    expect(qs('subtotal').value).toBe('49900');
-    expect(qs('discount').value).toBe('2495');
-    expect(qs('taxAmount').value).toBe('9007');
-    expect(qs('totalAmount').value).toBe('56412');
+    // M-01: se muestran con formato de pesos, como en el resto de la app.
+    expect(qs('subtotal').value).toBe('$49.900');
+    expect(qs('discount').value).toBe('$2.495');
+    expect(qs('taxAmount').value).toBe('$9.007');
+    expect(qs('totalAmount').value).toBe('$56.412');
     submit('document-form');
     const [doc] = storage.loadDocuments();
     expect(doc.status).toBe('cotización');
@@ -172,6 +173,45 @@ describe('Historia: los pedidos confirmados no se modifican', () => {
     expect(qs('lines-locked').hidden).toBe(false);
     expect(() => storage.updateDocument(doc.id, { lines: [{ ...doc.lines[0], quantity: 99 }] })).toThrow(/ya no se puede modificar/);
     expect(storage.updateDocument(doc.id, { status: 'despachado' }).status).toBe('despachado');
+  });
+});
+
+describe('Modificaciones M-01 y M-02 (T055)', () => {
+  it('M-01: los montos salen con formato de pesos, pero se guardan como número', () => {
+    const c = createCustomer();
+    fillOrder(c, { quantity: 10, discountPct: 5 });
+    for(const k of ['subtotal', 'discount', 'taxAmount', 'totalAmount']) expect(qs(k).value).toMatch(/^\$\d{1,3}(\.\d{3})*$/);
+    submit('document-form');
+    const [doc] = storage.loadDocuments();
+    expect(doc).toMatchObject({ subtotal: 49900, discount: 2495, taxAmount: 9007, totalAmount: 56412 });
+    // Al volver a abrir el pedido, sigue con formato de pesos.
+    qs('reset-document').click();
+    change(qs('edit-document'), doc.id);
+    expect(qs('totalAmount').value).toBe('$56.412');
+  });
+
+  it('M-02: en un pedido facturado los campos se ven bloqueados y la ✕ desaparece', () => {
+    const c = createCustomer();
+    fillOrder(c, { quantity: 2, status: 'confirmado' });
+    submit('document-form');
+    const [doc] = storage.loadDocuments();
+    for(const status of ['despachado', 'facturado']) storage.updateDocument(doc.id, { status });
+    qs('reset-document').click();
+    change(qs('edit-document'), doc.id);
+    expect(storage.loadDocuments()[0].status).toBe('facturado');
+    const table = qs('lines-body').closest('table');
+    expect(table.classList.contains('locked')).toBe(true);
+    for(const el of qs('lines-body').querySelectorAll('input, select')) expect(el.disabled).toBe(true);
+    for(const x of qs('lines-body').querySelectorAll('[data-remove]')) expect(x.hidden).toBe(true);
+    expect(qs('add-line').hidden).toBe(true);
+  });
+
+  it('M-02: en una cotización abierta todo sigue editable y la ✕ se ve', () => {
+    const c = createCustomer();
+    fillOrder(c, { quantity: 2 });
+    const table = qs('lines-body').closest('table');
+    expect(table.classList.contains('locked')).toBe(false);
+    for(const x of qs('lines-body').querySelectorAll('[data-remove]')) expect(x.hidden).toBe(false);
   });
 });
 
