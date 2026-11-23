@@ -28,10 +28,12 @@ Un módulo de Ventas web, construido sobre el template *ERP Software Base Module
 
 ## Usuarios
 
+Desde la iteración 3 cada persona entra con **su propia cuenta** (correo y contraseña) y el rol sale de la cuenta, ya no de un selector. La tabla completa de permisos, las reglas de contraseña y las cuentas de prueba están en [`docs/usuarios-y-roles.md`](../../docs/usuarios-y-roles.md).
+
 | Usuario | Objetivo | Acceso |
 |---|---|---|
-| Vendedor/a | Cotizar rápido con precios correctos y saber si el cliente tiene crédito | Clientes, cotizaciones y pedidos; **no** ve margen ni costos; no aprueba |
-| Jefe/a de ventas | Controlar descuentos y desempeño comercial | Todo, incluido margen; aprueba o rechaza descuentos |
+| Vendedor/a | Cotizar rápido con precios correctos, saber si el cliente tiene crédito y ver sus pendientes del día | Mira clientes y pedidos de todo el equipo, pero **solo modifica los suyos**; el campo "Vendedor" se llena solo con su nombre; **no** ve margen ni costos; no aprueba descuentos; no administra cuentas ni datos |
+| Jefe/a de ventas | Controlar descuentos, crédito y desempeño comercial, y decidir quién entra al sistema | Todo, incluido margen; aprueba o rechaza descuentos (al rechazar, con comentario); fija el crédito; crea, desactiva y restablece cuentas en "Equipo" |
 | Administración / Facturación | Recibir pedidos completos para facturar | Pedidos confirmados (lectura), fuera del MVP |
 | Gerencia | Ver tendencia y concentración de ventas | Panel agregado, fuera del MVP |
 
@@ -54,10 +56,15 @@ Escribimos cada historia con el formato **"Como [usuario], quiero [acción], par
 | US-09 | Mantener la lista de precios | Jefe/a de ventas | P1 | 2 (3 – 16 nov) | En curso |
 | US-10 | Ver cotizaciones por vencer y vencidas | Vendedor/a | P1 | 2 (3 – 16 nov) | En curso |
 | US-11 | Enviar la cotización al cliente | Vendedor/a | P2 | 3 (17 – 29 nov) | Pendiente |
-| US-12 | Ver el historial de estados de un pedido | Jefe/a de ventas | P2 | 2 (3 – 16 nov) | En curso |
+| US-12 | Ver el historial de estados de un pedido | Jefe/a de ventas | P2 | 2 (3 – 16 nov) | Hecha en parte: el historial se guarda y se ve en el pedido; falta el promedio de días en el panel |
 | US-13 | Fijar metas mensuales por vendedor | Jefe/a de ventas | P3 | 3 (17 – 29 nov) | Pendiente |
 | US-14 | Ver el stock antes de confirmar | Vendedor/a | P3 | 3 (17 – 29 nov) | Pendiente |
-| US-15 | Iniciar y cerrar sesión con mi cuenta | Vendedor/a y Jefe/a de ventas | P1 | 3 (16 – 22 nov) | Pendiente |
+| US-15 | Iniciar y cerrar sesión con mi cuenta | Vendedor/a y Jefe/a de ventas | P1 | 3 (16 – 29 nov) | Hecha |
+| US-16 | Ver y hacer solo lo que le toca a mi rol | Jefe/a de ventas | P1 | 3 (16 – 29 nov) | Hecha |
+| US-17 | Administrar las cuentas del equipo | Jefe/a de ventas | P2 | 3 (16 – 29 nov) | Hecha |
+| US-18 | Ver mis clientes en una lista y abrir su ficha | Vendedor/a | P2 | 3 (16 – 29 nov) | Pendiente |
+| US-19 | Seguir los pedidos en un tablero por estado | Vendedor/a | P2 | 3 (16 – 29 nov) | Pendiente |
+| US-20 | Panel de inicio con lo que tengo que hacer hoy | Vendedor/a y Jefe/a de ventas | P2 | 3 (16 – 29 nov) | Hecha |
 
 ### Iteración 2 (3 – 16 nov): modificaciones e incremental
 
@@ -94,6 +101,19 @@ Cada persona revisa el trabajo de alguien del otro equipo: Pedro ↔ Joaquín, F
 US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov), junto con US-15 (16 – 22 nov). En dos semanas no alcanzábamos a hacer las seis historias nuevas con sus pruebas. Elegimos las dos P1 y el historial de estados, porque deja registro de quién cambió cada pedido y cuándo, igual que ya hacemos con los descuentos (DR-04); las otras tres se pueden agregar después sin cambiar lo que ya existe. US-15 se prioriza en la iteración 3 porque corrige el acceso simulado por selector y permite saber quién realiza cada acción.
 
 **Cómo trabajamos esta iteración**: cada persona trabaja en una rama con el código de su historia (por ejemplo, `m-01-montos` o `us-09-lista-precios`) y abre un *pull request* que revisa su pareja del otro equipo. Antes de pedir revisión, `npx vitest run` tiene que pasar entero. El viernes 6 de noviembre cada uno muestra en el grupo cómo va, y el lunes 16 queda todo unido en `main`.
+
+### Iteración 3 (16 – 29 nov): seguridad y pantallas propias
+
+El 15 de noviembre el profe nos dijo que el módulo se veía casi igual al template, y en la ayudantía del 16 que faltaba seguridad (cuenta y contraseña). Por eso la iteración 3 tiene seis historias, una por integrante: US-15 a US-17 son de **seguridad** (quién entra y qué puede hacer) y US-18 a US-20 cambian las **pantallas** que más se parecían al template. Cada historia se subió en su rama con un *pull request* revisado por otro compañero (PR #23, #26, #29, #30 y #32), y cada uno registró su decisión como issue (#22, #24, #25, #27, #28, #31 y #33).
+
+| US | Responsable | Revisa | Estado al 23 nov |
+|---|---|---|---|
+| US-15 Iniciar sesión | Francisca | Pedro | Hecha |
+| US-16 Permisos por rol | Pedro | Joaquín | Hecha |
+| US-17 Cuentas del equipo | Joaquín | Ezequiel | Hecha |
+| US-18 Lista de clientes | Ezequiel | Antonio | Pendiente |
+| US-19 Tablero de pedidos | Antonio | Sebastián | Pendiente |
+| US-20 Panel de inicio | Sebastián | Francisca | Hecha |
 
 ---
 
@@ -350,6 +370,128 @@ US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov), junto con US-15 (1
 5. **Dada** una sesión abierta, **cuando** presiono "Cerrar sesión" o paso 30 minutos sin usar la app, **entonces** vuelvo a la pantalla de entrada.
 6. **Dada** cualquier cuenta, **cuando** se guarda su contraseña, **entonces** se almacena de forma protegida (hash), nunca como texto legible.
 
+**Estado**: Hecha (23 nov). Cuentas de prueba en el README y en [`docs/usuarios-y-roles.md`](../../docs/usuarios-y-roles.md).
+
+---
+
+### Historia de Usuario 16 (US-16): Ver y hacer solo lo que le toca a mi rol (Prioridad: P1) · Iteración 3 (16–29 nov) · Pedro Pablo Chávez
+
+**Como** jefe/a de ventas, **quiero** que cada cuenta tenga un rol (vendedor/a o jefe/a) y que el sistema muestre y deje hacer solo lo que corresponde a ese rol, **para** que un vendedor no pueda aprobar sus propios descuentos ni ver costos y márgenes.
+
+**Por qué es P1**: Ya tenemos reglas que dependen del rol: solo el jefe/a aprueba descuentos sobre 10 % (US-04) y solo el jefe/a ve el margen. Pero hoy el rol se elige en un selector, así que cualquiera se lo cambia. Si el rol sale de la cuenta con la que entraste, esas reglas por fin se cumplen.
+
+**Cómo se prueba sola**: Entrar como vendedor/a, abrir un pedido con un descuento pendiente y ver que no aparecen "Aprobar" ni "Rechazar". Después entrar como jefe/a y aprobarlo.
+
+**Tablas**: users (columna role), discount_approvals, sales_orders, sales_order_status_history.
+
+**Estado**: Hecha (23 nov). Detalle en [`docs/historias-de-usuario/US-16-permisos-por-rol.md`](../../docs/historias-de-usuario/US-16-permisos-por-rol.md).
+
+**Criterios de aceptación**:
+
+1. **Dado** que entré con mi cuenta, **cuando** miro la barra de arriba, **entonces** ya no está el selector "Perfil": mi rol sale de mi cuenta y no lo puedo cambiar.
+2. **Dada** una cuenta de vendedor/a, **cuando** abro un pedido con un descuento pendiente, **entonces** no veo los botones "Aprobar" ni "Rechazar", y tampoco veo el costo ni el margen.
+3. **Dada** una cuenta de vendedor/a, **cuando** creo una cotización, **entonces** el campo "Vendedor" se llena solo con mi nombre y no lo puedo cambiar.
+4. **Dada** una cuenta de vendedor/a, **cuando** abro "Pedidos", **entonces** veo mis pedidos primero. Puedo mirar los de otros vendedores, pero solo puedo editar los míos.
+5. **Dado** cualquier cambio de estado o cualquier aprobación, **cuando** se guarda, **entonces** queda registrado con el nombre de la persona que tenía la sesión abierta (ya no con el "perfil"), y se ve en el historial del pedido (US-12).
+6. **Dada** una cuenta de vendedor/a, **cuando** abro el panel, **entonces** no aparecen "Borrar todos los datos" ni "Importar datos". Eso queda solo para el jefe/a.
+7. **Dada** una cuenta de jefe/a, **cuando** entro, **entonces** veo todo, incluido el margen y los descuentos por aprobar.
+
+---
+
+### Historia de Usuario 17 (US-17): Administrar las cuentas del equipo (Prioridad: P2) · Iteración 3 (16–29 nov) · Joaquín Espinoza
+
+***Como*** jefe/a de ventas, ***quiero*** crear cuentas para los vendedores nuevos, desactivar las de quienes se van y restablecer una contraseña olvidada, ***para*** controlar quién entra al sistema sin depender de otra persona.
+
+**Por qué es P2**: Con las cuentas de prueba ya se puede usar el sistema, por eso no es P1. Pero en una empresa real entran y salen vendedores, y una cuenta activa de alguien que ya no trabaja ahí es un riesgo: podría seguir viendo los clientes y los precios.
+
+**Cómo se prueba sola**: Como jefe/a, crear una cuenta nueva, entrar con ella, volver a la cuenta del jefe/a, desactivarla y ver que ya no puede entrar.
+
+**Tablas**: `users` (nueva, la agrego al MER) y `employees` (externa).
+
+**Estado**: Hecha (23 nov). Detalle en [`docs/historias-de-usuario/US-17-cuentas-del-equipo.md`](../../docs/historias-de-usuario/US-17-cuentas-del-equipo.md).
+
+**Criterios de aceptación**:
+
+1. ***Dada*** una cuenta de jefe/a, ***cuando*** abro "Equipo", ***entonces*** veo la lista de cuentas con nombre, correo, rol, estado (activa o desactivada) y último ingreso.
+2. ***Dados*** un nombre, un correo, un rol y una contraseña inicial, ***cuando*** guardo, ***entonces*** se crea la cuenta. Si el correo ya existe, no se crea y el sistema avisa.
+3. ***Dada*** una contraseña de menos de 8 caracteres o sin ningún número, ***cuando*** guardo, ***entonces*** el sistema no la acepta y dice por qué.
+4. ***Dada*** una cuenta desactivada, ***cuando*** esa persona intenta entrar, ***entonces*** no puede. Sus clientes y pedidos no se borran y siguen saliendo con su nombre.
+5. ***Dada*** una contraseña restablecida por el jefe/a, ***cuando*** la persona entra, ***entonces*** el sistema le pide cambiarla antes de seguir.
+6. ***Dado*** que solo queda un jefe/a activo, ***cuando*** intento desactivarlo, ***entonces*** el sistema no deja, para que nunca quede el sistema sin nadie que lo administre.
+7. ***Dada*** una cuenta de vendedor/a, ***cuando*** miro el menú, ***entonces*** no aparece "Equipo".
+
+---
+
+### Historia de Usuario 18 (US-18): Ver mis clientes en una lista y abrir su ficha (Prioridad: P2) · Iteración 3 (16–29 nov) · Ezequiel Romero
+
+***Como*** vendedor/a, ***quiero*** ver mis clientes en una tabla que pueda buscar y ordenar, y abrir la ficha de cada uno, ***para*** encontrar rápido a un cliente y ver cómo está sin buscarlo en un selector.
+
+**Por qué es P2**: La pantalla de Clientes de hoy es la misma del template: un selector "Editar o eliminar el cliente" y un formulario largo abajo. Con 10 clientes de demostración se puede usar, pero el caso tiene unos 150 y así no sirve. El profe nos dijo que el módulo se ve casi igual al template, y esta es una de las pantallas donde más se nota.
+
+**Cómo se prueba sola**: Cargar los datos de demostración, abrir Clientes, escribir "Ferre" en el buscador, ordenar por crédito disponible y abrir la ficha de un cliente.
+
+**Tablas**: `customers`, `sales_orders` (para el crédito usado y los últimos pedidos).
+
+**Estado**: Pendiente. Detalle en [`docs/historias-de-usuario/US-18-lista-de-clientes.md`](../../docs/historias-de-usuario/US-18-lista-de-clientes.md).
+
+**Criterios de aceptación**:
+
+1. ***Dado*** que abro "Clientes", ***cuando*** carga la pantalla, ***entonces*** veo una tabla con razón social, RUT, ejecutivo, crédito disponible y próximo contacto.
+2. ***Dado*** un texto en el buscador, ***cuando*** escribo, ***entonces*** la tabla se filtra al tiro por razón social o RUT.
+3. ***Dado*** un clic en el título de una columna, ***cuando*** lo hago, ***entonces*** la tabla se ordena por esa columna (y al volver a hacer clic, al revés).
+4. ***Dado*** un clic en un cliente, ***cuando*** se abre su ficha, ***entonces*** veo sus datos, una barra con el crédito usado y el disponible, y sus últimos 5 pedidos, con los botones "Editar" y "Nueva cotización".
+5. ***Dado*** un cliente que ya usó el 90 % o más de su crédito, ***cuando*** lo veo en la tabla, ***entonces*** aparece marcado para que no le confirme un pedido sin revisar (regla de US-03).
+6. ***Dada*** una cuenta de vendedor/a, ***cuando*** abro la lista, ***entonces*** parte filtrada en "Mis clientes" (los que tengo asignados) y puedo cambiar a "Todos".
+7. ***Dado*** el botón "Nuevo cliente", ***cuando*** lo presiono, ***entonces*** el formulario se abre en una ventana aparte y no queda pegado al final de la pantalla.
+
+---
+
+### Historia de Usuario 19 (US-19): Seguir los pedidos en un tablero por estado (Prioridad: P2) · Iteración 3 (16–29 nov) · Antonio Araneda
+
+***Como*** vendedor/a, ***quiero*** ver mis cotizaciones y pedidos en columnas según su estado, ***para*** saber de un vistazo en qué va cada venta y cuáles tengo que mover.
+
+**Por qué es P2**: Hoy los 39 pedidos de demostración están en un solo selector y para ver uno hay que abrirlo. No se ve cuántas cotizaciones hay abiertas ni cuántos pedidos faltan por despachar. Además es otra pantalla igual a la del template. Esta historia reemplaza la idea del filtro de la M-06 por algo más útil.
+
+**Cómo se prueba sola**: Cargar los datos de demostración, abrir "Pedidos", mover una cotización a "Confirmado" y ver que cambia de columna. Intentar lo mismo con un cliente sin crédito y ver que no deja.
+
+**Tablas**: `sales_quotes`, `sales_orders`, `sales_order_status_history`, `lost_reasons`.
+
+**Estado**: Pendiente. Detalle en [`docs/historias-de-usuario/US-19-tablero-de-pedidos.md`](../../docs/historias-de-usuario/US-19-tablero-de-pedidos.md).
+
+**Criterios de aceptación**:
+
+1. ***Dado*** que abro "Pedidos", ***cuando*** carga la pantalla, ***entonces*** veo una columna por estado (cotización, enviada, confirmado, despachado y facturado), y cada pedido es una tarjeta con folio, cliente, total en pesos y vendedor.
+2. ***Dado*** el título de cada columna, ***cuando*** lo miro, ***entonces*** dice cuántos pedidos hay y la suma de sus totales.
+3. ***Dada*** una tarjeta, ***cuando*** hago clic, ***entonces*** se abre el pedido completo.
+4. ***Dada*** una tarjeta, ***cuando*** la paso al estado siguiente (con el botón "Avanzar" o arrastrándola), ***entonces*** el estado cambia solo si ese cambio está permitido y se cumplen las reglas de crédito (US-03) y de descuento aprobado (US-04). Si no, la tarjeta vuelve a su columna y aparece el motivo.
+5. ***Dada*** una tarjeta que paso a "perdida", ***cuando*** la suelto, ***entonces*** el sistema me pide el motivo de pérdida (US-05) antes de guardarla.
+6. ***Dados*** los filtros de vendedor y de fecha, ***cuando*** elijo uno, ***entonces*** el tablero muestra solo esos pedidos.
+7. ***Dados*** pedidos perdidos o anulados, ***cuando*** miro el tablero, ***entonces*** no ocupan columna; se ven aparte en "Cerrados sin venta".
+
+---
+
+### Historia de Usuario 20 (US-20): Panel de inicio con lo que tengo que hacer hoy (Prioridad: P2) · Iteración 3 (16–29 nov) · Sebastián Amigo
+
+***Como*** vendedor/a, ***quiero*** que al entrar el panel me salude por mi nombre y me muestre lo que tengo pendiente hoy, ***para*** partir el día sabiendo qué hacer sin revisar pedido por pedido.
+
+**Por qué es P2**: El panel de hoy parte con las tarjetas del template ("Nuevo Cliente: Registrar un dato maestro", "Registrar una transacción", "Buscar registros"), que no dicen nada de ventas. Los indicadores están bien, pero son iguales para todos y no dicen qué hacer. Si el sistema ya sabe quién entró (US-15), el panel puede mostrar lo de cada uno.
+
+**Cómo se prueba sola**: Entrar como Camila Rojas con los datos de demostración y ver sus pendientes. Entrar como jefe/a y ver que el panel cambia.
+
+**Tablas**: `sales_quotes` (vigencia), `customers` (próximo contacto), `discount_approvals`, `sales_orders`.
+
+**Estado**: Hecha (23 nov). Detalle en [`docs/historias-de-usuario/US-20-panel-de-inicio.md`](../../docs/historias-de-usuario/US-20-panel-de-inicio.md).
+
+**Criterios de aceptación**:
+
+1. ***Dado*** que entro con mi cuenta, ***cuando*** se abre el panel, ***entonces*** veo "Hola, [mi nombre]" y la fecha de hoy.
+2. ***Dada*** una cuenta de vendedor/a, ***cuando*** miro el panel, ***entonces*** veo "Mis pendientes de hoy": cotizaciones que vencen en 3 días o menos, clientes con próximo contacto hoy o atrasado, y mis descuentos esperando respuesta o rechazados con su comentario.
+3. ***Dado*** un pendiente, ***cuando*** hago clic, ***entonces*** se abre esa cotización, ese cliente o ese pedido.
+4. ***Dada*** una cuenta de jefe/a, ***cuando*** miro el panel, ***entonces*** arriba aparecen los descuentos por aprobar y las ventas del mes comparadas con el mes pasado.
+5. ***Dado*** el panel, ***cuando*** lo abro, ***entonces*** ya no están las tarjetas genéricas del template. Los botones dicen lo que hacen en ventas: "Nueva cotización", "Nuevo cliente" y "Ver pedidos".
+6. ***Dada*** cualquier pantalla, incluida la de entrada, ***cuando*** la abro, ***entonces*** se ve el nombre y el logo de la distribuidora, con los mismos colores en todo el sistema.
+7. ***Dado*** un celular, ***cuando*** abro el panel, ***entonces*** se ve en una sola columna y los pendientes van primero.
+
 ---
 
 ### Casos Límite
@@ -378,7 +520,7 @@ US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov), junto con US-15 (1
 - **FR-V06**: Los estados DEBEN seguir el ciclo configurado y rechazar transiciones no permitidas, cualquiera sea la vía del cambio. Un documento nuevo solo puede crearse como `cotización` o `confirmado` (venta directa).
 - **FR-V07**: El sistema DEBE impedir pasar a `confirmado` si el total supera el crédito disponible (límite − pedidos confirmados y despachados).
 - **FR-V08**: El sistema DEBE registrar una solicitud de aprobación cuando algún descuento de línea supere el 10 %, e impedir confirmar sin una aprobación vigente por un % igual o mayor.
-- **FR-V09**: Solo el perfil jefe/a de ventas DEBE poder aprobar o rechazar; la decisión guarda quién decidió (en el MVP, el perfil simulado) y cuándo.
+- **FR-V09**: Solo el perfil jefe/a de ventas DEBE poder aprobar o rechazar; la decisión guarda quién decidió (desde la iteración 3, el nombre de quien tenía la sesión) y cuándo.
 - **FR-V10**: El sistema DEBE exigir un motivo al marcar un documento como `perdida`.
 - **FR-V11**: Un documento que ya no está abierto (confirmado, despachado, facturado, perdido o anulado) NO DEBE permitir modificar sus líneas.
 - **FR-V12**: El panel DEBE mostrar los indicadores de la Historia 6 y ocultar el margen al perfil vendedor/a.
@@ -415,13 +557,23 @@ US-11, US-13 y US-14 pasan a la iteración 3 (17 – 29 nov), junto con US-15 (1
 - **FR-V34** (US-15): Tras 5 intentos fallidos consecutivos para una misma cuenta, el sistema DEBE bloquear el ingreso por 15 minutos e informar el tiempo restante.
 - **FR-V35** (US-15): El sistema DEBE permitir cerrar sesión manualmente y cerrar automáticamente la sesión tras 30 minutos de inactividad.
 - **FR-V36** (US-15): Las contraseñas DEBEN almacenarse únicamente en forma protegida (hash), nunca en texto legible.
+- **FR-V37** (US-16): El rol DEBE salir de la cuenta con sesión abierta; no existe un selector para cambiarlo.
+- **FR-V38** (US-16): Un vendedor/a DEBE poder ver los pedidos de otros, pero solo modificar, avanzar o eliminar los suyos; la regla se valida también en la capa de datos.
+- **FR-V39** (US-16): En un documento nuevo creado por un vendedor/a, el campo "Vendedor" DEBE quedar con su nombre y no se puede cambiar.
+- **FR-V40** (US-16, US-12): Cada cambio de estado DEBE guardarse en el historial (estado anterior, nuevo, fecha y nombre de quien tenía la sesión), sin poder editarse ni borrarse.
+- **FR-V41** (US-04, M-03): Al rechazar un descuento, el jefe/a DEBE escribir un comentario, que el vendedor/a ve en su pedido junto con el motivo que había pedido.
+- **FR-V42** (US-17): Solo el jefe/a DEBE poder crear, desactivar, reactivar cuentas y restablecer contraseñas; las cuentas no se borran.
+- **FR-V43** (US-17): Una contraseña DEBE tener al menos 8 caracteres y un número; una cuenta nueva o restablecida DEBE cambiar su contraseña al entrar.
+- **FR-V44** (US-17): El sistema NO DEBE permitir desactivar al único jefe/a activo.
+- **FR-V45** (US-20): El panel DEBE saludar por el nombre y mostrar los pendientes de hoy según el rol (vendedor/a: cotizaciones por vencer, contactos del día, descuentos en espera o rechazados; jefe/a: descuentos por aprobar y ventas del mes contra el mes pasado), cada uno con un enlace que lo abre.
 
 ### Requisitos de Datos y Privacidad
 
 - **DR-01**: El límite de crédito lo fija la jefatura según el historial de pago del cliente (en producción, con datos de Finanzas; en el MVP se ingresa a mano); el sistema no almacena ni usa atributos personales (edad, género, comuna de residencia de personas naturales) para decisiones comerciales.
 - **DR-02**: Los datos de demostración son 100 % ficticios; no se cargan datos reales de personas en la demo.
-- **DR-03**: El margen y el costo estándar son datos sensibles: en el MVP, visibles solo para el perfil jefe/a de ventas (en producción, también para gerencia).
+- **DR-03**: El margen y el costo estándar son datos sensibles: en el MVP, visibles solo para el rol jefe/a de ventas (en producción, también para gerencia).
 - **DR-04**: Cada aprobación de descuento guarda el motivo (obligatorio), quién la pidió, quién decidió y cuándo (trazabilidad).
+- **DR-05** (US-15, US-17): De cada cuenta se guarda solo lo necesario para entrar y controlar el acceso (correo, rol, hash y sal de la contraseña, estado, intentos fallidos y último ingreso). No se guardan RUT, dirección ni otros datos personales del vendedor/a.
 
 ### Entidades Clave
 
@@ -451,7 +603,7 @@ Detalle completo en [data-model.md](data-model.md).
 ## Suposiciones
 
 - Es un MVP **solo frontend**: los datos viven en `localStorage` del navegador (un usuario, un navegador).
-- Los perfiles vendedor/jefe se **simulan** con un selector; no hay inicio de sesión real.
+- Desde la iteración 3 hay inicio de sesión con cuentas y roles, pero las cuentas viven en el navegador (`localStorage`), igual que el resto de los datos. En producción irían en un servidor.
 - Cotización y pedido son el mismo documento en distintos estados (simplifica el template, que trae un solo tipo de documento).
 - Hay una sola lista de precios vigente, definida en el perfil; varias listas con vigencia quedan para desarrollo futuro.
 - Devoluciones (`returns_rma`), despacho real (Logística) y facturación electrónica (Finanzas/SII) quedan fuera del MVP; el estado del pedido deja lista la conexión.

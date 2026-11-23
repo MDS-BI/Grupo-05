@@ -7,7 +7,9 @@ Extiende [`001-erp-base-module/contracts/entity-storage.md`](../../001-erp-base-
 | `erp_base_module:entities` | Clientes | `customers` |
 | `erp_base_module:documents` | Cotizaciones y pedidos, con sus líneas anidadas | `sales_quotes` + `sales_quote_lines` + `sales_orders` + `sales_order_lines` |
 | `erp_base_module:discount_approvals` | Solicitudes y decisiones de descuento | `discount_approvals` |
-| `erp_base_module:role` | Perfil simulado (`vendedor` / `jefe`) | (sesión) |
+| `erp_base_module:users` | Cuentas: correo, rol, hash y sal de la contraseña, estado, intentos fallidos, bloqueo, último ingreso | `users` |
+| `erp_base_module:session` | Sesión abierta: cuenta, inicio y última actividad (expira a los 30 min sin uso) | (sesión) |
+| `erp_base_module:status_history` | Un registro por cada cambio de estado, con quién y cuándo | `sales_order_status_history` |
 
 Catálogo de productos, vendedores y motivos de pérdida: viven en `src/profiles/ventas.js` (equivalen a `products`/`price_list_items`, `employees` y `lost_reasons`).
 

@@ -27,6 +27,8 @@ En muchas pymes, la venta se gestiona con planillas, WhatsApp y facturas sueltas
 | **Gerencia** | Revisa ventas, margen y tendencia | Panel agregado | Solo lectura, agregado (fuera del MVP; en el MVP el margen lo ve solo el jefe/a de ventas) |
 | **Cliente final** (usuario indirecto) | Recibe cotizaciones | Precios claros, trato justo | Sus datos personales están protegidos por el sistema |
 
+Desde la iteración 3, vendedor/a y jefe/a de ventas entran con **su propia cuenta** (correo y contraseña) y el sistema aplica los permisos de cada rol. Tabla completa de permisos, reglas de contraseña y cuentas de prueba: [`usuarios-y-roles.md`](usuarios-y-roles.md).
+
 ## 3. Alcance del MVP (compromiso)
 
 **Lo que sí haremos:**
@@ -102,6 +104,7 @@ En muchas pymes, la venta se gestiona con planillas, WhatsApp y facturas sueltas
 | **Uso de datos para vigilar vendedores** | Ranking público que presiona a vender con descuentos | Indicadores por vendedor visibles solo para la jefatura y siempre junto al margen, no solo al volumen |
 | **Datos incompletos o duplicados** | El mismo cliente creado dos veces | RUT único con dígito verificador; búsqueda antes de crear |
 | **Almacenamiento local** | `localStorage` no está cifrado y se borra con el navegador | Aceptable solo para la demo sin datos reales; exportar e importar JSON; paso a servidor en la etapa de escalabilidad |
+| **Acceso indebido** | Un vendedor se pone "jefe" y se aprueba su descuento, o un ex vendedor sigue entrando | Inicio de sesión con contraseña protegida (hash y sal), rol fijo por cuenta, reglas revisadas también en la capa de datos, cuentas que se desactivan y cierre por 30 minutos sin uso (iteración 3) |
 
 ## 7. Escalabilidad y desarrollo futuro
 

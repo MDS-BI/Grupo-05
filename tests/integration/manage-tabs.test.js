@@ -33,7 +33,7 @@ afterEach(() => {
 
 describe('User Story 4 - manage entities and documents via the workspace sidebar', () => {
   it('shows a persistent module navigation with Dashboard, Entities, Documents, and Search buttons', () => {
-    const buttons = [...document.querySelectorAll('.nav-module')];
+    const buttons = [...document.querySelectorAll('.nav-module:not([hidden])')];
     expect(buttons.length).toBe(4);
     expect(buttons.map(b => b.dataset.module)).toEqual(['dashboard', 'entities', 'documents', 'search']);
   });

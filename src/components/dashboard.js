@@ -3,8 +3,9 @@
 import { getConfig } from '../module-config.js';
 import {
   loadEntities, loadDocuments, pendingApprovals, decideApproval, documentNumber,
-  clearAll, exportData, importData, currentRole, ROLE_KEY
+  clearAll, exportData, importData, currentRole, loadApprovals
 } from '../storage.js';
+import { currentUser, authEnabled, ROLES } from '../auth.js';
 import { salesKpis, monthlySales, movingAverage, linearTrend } from '../sales/sales-logic.js';
 import { buildDemoData } from '../sales/demo-data.js';
 import { money, percent, today, monthLabel } from './format.js';
@@ -13,30 +14,38 @@ import { flash } from './shell.js';
 const $ = (id) => document.getElementById(id);
 
 let onChange = () => {};
+let onOpen = () => {};
 
 export { currentRole };
 
-export function initDashboard({ onDataChanged }){
+export function initDashboard({ onDataChanged, onOpenItem }){
   onChange = onDataChanged || (() => {});
+  onOpen = onOpenItem || (() => {});
   const sales = getConfig().sales;
   $('sales-dashboard').hidden = !sales;
-  $('role-switch').hidden = !sales;
   if(!sales) return;
 
   $('dashboard-lead').textContent = 'Cotiza, confirma pedidos y revisa cómo van las ventas.';
-  $('role-select').value = currentRole();
-  $('role-select').addEventListener('change', () => {
-    localStorage.setItem(ROLE_KEY, $('role-select').value);
-    refreshDashboard();
-  });
 
   $('approvals-list').addEventListener('click', (ev) => {
     const btn = ev.target.closest('[data-decision]');
     if(!btn) return;
     if(currentRole() !== 'jefe') return;
-    decideApproval(btn.dataset.id, btn.dataset.decision, 'Jefe/a de ventas');
-    flash(btn.dataset.decision === 'aprobado' ? 'Descuento aprobado.' : 'Descuento rechazado.');
+    const comment = document.getElementById(`comment-${btn.dataset.id}`)?.value || '';
+    try {
+      decideApproval(btn.dataset.id, btn.dataset.decision, 'Jefe/a de ventas', comment);
+    } catch (err){
+      flash(err.message);
+      return;
+    }
+    flash(btn.dataset.decision === 'aprobado' ? 'Descuento aprobado.' : 'Descuento rechazado. El vendedor/a verá tu comentario en el pedido.');
     onChange();
+  });
+
+  $('pending-list').addEventListener('click', (ev) => {
+    const item = ev.target.closest('[data-open]');
+    if(!item) return;
+    onOpen(item.dataset.open, item.dataset.id);
   });
 
   $('load-demo').addEventListener('click', () => {
@@ -89,6 +98,7 @@ function refreshSales(sales){
   const month = today().slice(0, 7);
   const k = salesKpis(docs, entities, sales, month);
   const isBoss = currentRole() === 'jefe';
+  renderGreeting(docs, entities, sales, isBoss);
 
   $('kpi-month-sales').textContent = money(k.monthSales);
   $('kpi-month-orders').textContent = `${k.monthOrders} pedido(s) este mes`;
@@ -118,6 +128,12 @@ function refreshSales(sales){
     text.textContent = `${documentNumber(d)} · ${names[d.entity_id] ?? '?'} · ${d.vendedor || 'sin vendedor'} · ${a.discount_pct} % · ${money(d.totalAmount)} · "${a.reason}"`;
     li.append(text);
     if(isBoss){
+      const comment = document.createElement('input');
+      comment.id = `comment-${a.approval_id}`;
+      comment.className = 'small-input';
+      comment.placeholder = 'Comentario (obligatorio si rechazas)';
+      comment.setAttribute('aria-label', `Comentario para ${documentNumber(d)}`);
+      li.append(comment);
       const ok = document.createElement('button');
       ok.type = 'button';
       ok.className = 'small';
@@ -139,7 +155,7 @@ function refreshSales(sales){
   if(pending.length && !isBoss){
     const note = document.createElement('li');
     note.className = 'muted';
-    note.textContent = 'Solo el perfil Jefe/a de ventas puede aprobar o rechazar.';
+    note.textContent = 'Solo el jefe/a de ventas puede aprobar o rechazar.';
     list.append(note);
   }
 
@@ -207,4 +223,92 @@ function renderMonthly(docs, sales){
   $('forecast-note').textContent = values.length < 2
     ? 'Se necesitan al menos dos meses cerrados con ventas para estimar la tendencia.'
     : `* Mes en curso (parcial). Pronóstico del mes en curso con meses cerrados: ${money(forecast)} (recta de mínimos cuadrados); promedio móvil de 3 meses: ${money(avg)}.`;
+}
+
+// ---------------------------------------------------------------------------
+// US-20: saludo y "Mis pendientes de hoy"
+// ---------------------------------------------------------------------------
+
+const DAY_NAMES = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+const MONTH_NAMES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+function longDate(iso){
+  const [y, m, d] = iso.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  return `${DAY_NAMES[date.getDay()]} ${d} de ${MONTH_NAMES[m - 1]} de ${y}`;
+}
+
+function daysBetween(fromIso, toIso){
+  return Math.round((Date.parse(`${toIso}T00:00:00Z`) - Date.parse(`${fromIso}T00:00:00Z`)) / 864e5);
+}
+
+/** Pendientes del día para quien entró. Función pura para poder probarla. */
+export function pendingFor(user, docs, entities, approvals, sales, todayIso){
+  const items = [];
+  if(!user) return items;
+  const names = Object.fromEntries(entities.map(e => [e.entity_id, e.name]));
+  const byId = Object.fromEntries(docs.map(d => [d.id, d]));
+  if(user.role === 'jefe'){
+    for(const a of approvals.filter(x => x.decision === 'pendiente' && byId[x.sales_order_id])){
+      const d = byId[a.sales_order_id];
+      items.push({ kind: 'document', id: d.id, text: `Aprobar descuento de ${a.discount_pct} % en ${documentNumber(d)} (${names[d.entity_id] ?? '?'}), pedido por ${a.requested_by || 'un vendedor/a'}` });
+    }
+    return items;
+  }
+  const mine = docs.filter(d => d.vendedor === user.name);
+  for(const d of mine.filter(x => sales.openStatuses.includes(x.status) && x.endDate)){
+    const left = daysBetween(todayIso, d.endDate);
+    if(left < 0) items.push({ kind: 'document', id: d.id, text: `${documentNumber(d)} (${names[d.entity_id] ?? '?'}) venció hace ${-left} día(s)` });
+    else if(left <= 3) items.push({ kind: 'document', id: d.id, text: `${documentNumber(d)} (${names[d.entity_id] ?? '?'}) vence ${left === 0 ? 'hoy' : `en ${left} día(s)`}` });
+  }
+  for(const e of entities.filter(x => x.ejecutivo === user.name && x.targetDate && x.targetDate <= todayIso)){
+    items.push({ kind: 'entity', id: e.id, text: `Contactar a ${e.name}${e.targetDate < todayIso ? ` (atrasado desde el ${e.targetDate})` : ' (hoy)'}` });
+  }
+  const myIds = new Set(mine.map(d => d.id));
+  const latest = {};
+  for(const a of approvals.filter(x => myIds.has(x.sales_order_id))) latest[a.sales_order_id] = a;
+  for(const a of Object.values(latest)){
+    const d = byId[a.sales_order_id];
+    if(a.decision === 'pendiente') items.push({ kind: 'document', id: d.id, text: `Descuento de ${a.discount_pct} % en ${documentNumber(d)} esperando al jefe/a` });
+    if(a.decision === 'rechazado') items.push({ kind: 'document', id: d.id, text: `Descuento rechazado en ${documentNumber(d)}${a.decision_comment ? `: "${a.decision_comment}"` : ''}` });
+  }
+  return items;
+}
+
+function renderGreeting(docs, entities, sales, isBoss){
+  const user = authEnabled() ? currentUser() : null;
+  const box = $('my-pending');
+  if(!user){ box.hidden = true; return; }
+  const first = user.name.split(' ')[0];
+  $('dashboard-heading').textContent = `Hola, ${first}`;
+  $('dashboard-lead').textContent = `Hoy es ${longDate(today())}. Entraste como ${ROLES[user.role].toLowerCase()}.`;
+  $('pending-heading').textContent = isBoss ? 'Por revisar hoy' : 'Mis pendientes de hoy';
+  const items = pendingFor(user, docs, entities, loadApprovals(), sales, today());
+  const list = $('pending-list');
+  list.innerHTML = '';
+  if(isBoss){
+    const month = today().slice(0, 7);
+    const [y, m] = month.split('-').map(Number);
+    const prev = `${m === 1 ? y - 1 : y}-${String(m === 1 ? 12 : m - 1).padStart(2, '0')}`;
+    const cur = salesKpis(docs, entities, sales, month).monthSales;
+    const before = salesKpis(docs, entities, sales, prev).monthSales;
+    const li = document.createElement('li');
+    li.className = 'pending-summary';
+    const diff = before ? ` (${cur >= before ? '+' : ''}${Math.round((cur - before) / before * 100)} % vs. mes pasado: ${money(before)})` : '';
+    li.textContent = `Ventas del mes: ${money(cur)}${diff}`;
+    list.append(li);
+  }
+  for(const it of items){
+    const li = document.createElement('li');
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'link-button';
+    btn.dataset.open = it.kind;
+    btn.dataset.id = it.id;
+    btn.textContent = it.text;
+    li.append(btn);
+    list.append(li);
+  }
+  $('pending-empty').hidden = items.length > 0;
+  box.hidden = false;
 }

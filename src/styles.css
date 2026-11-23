@@ -42,7 +42,10 @@ body {
 .brand { display: flex; align-items: center; gap: 10px; }
 .logo-mark { display: inline-flex; }
 .brand-name { font-weight: 700; font-size: 18px; }
-.role-switch { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+.user-box { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.user-text { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+.user-name { font-weight: 600; }
+.user-role { color: var(--muted); font-size: 12px; }
 
 .workspace { display: flex; min-height: calc(100vh - 56px); }
 
@@ -169,6 +172,58 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   .nav-module { justify-content: center; padding: 10px 0; }
   .nav-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   .content { padding: 16px; }
-  .role-switch label { display: none; }
+  .user-text { display: none; }
 }
 .bar.partial .bar-fill { opacity: .55; }
+
+/* ---------- Iteración 3: entrada, pendientes, historial y equipo ---------- */
+.login-view {
+  min-height: calc(100vh - 56px); display: grid; place-items: center; padding: 24px 16px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 14%, var(--bg)) 0%, var(--bg) 60%);
+}
+.login-card {
+  width: 100%; max-width: 380px; padding: 28px; border-radius: 16px;
+  background: var(--surface); border: 1px solid var(--border);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  display: flex; flex-direction: column; gap: 12px;
+  animation: rise 0.35s ease-out;
+}
+.login-card h1 { margin: 0; font-size: 22px; }
+.login-card .muted { margin: 0; }
+.login-card button[type="submit"] { width: 100%; padding: 10px; font-size: 15px; }
+.login-logo { align-self: flex-start; }
+.login-help { font-size: 13px; }
+.login-help summary { cursor: pointer; color: var(--accent); }
+.login-help code { font-size: 12px; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.pending-panel { margin: 0 0 18px; border-left: 4px solid var(--accent); }
+.pending-panel h2 { margin-top: 0; font-size: 17px; }
+.pending-list li { padding: 4px 0; }
+.pending-summary { font-weight: 600; }
+button.link-button {
+  background: none; border: 0; padding: 0; color: var(--accent); text-align: left;
+  font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+}
+.small-input { padding: 4px 8px; font-size: 13px; max-width: 220px; }
+.approval-item { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.approval-item > span { flex: 1 1 100%; }
+
+.filters { gap: 8px; flex-wrap: wrap; margin-bottom: 10px; font-size: 14px; }
+.filters select { min-width: 140px; }
+
+.history { margin-top: 14px; padding: 12px 14px; border-radius: 8px; background: var(--bg); }
+.history h3 { margin: 0 0 6px; font-size: 14px; }
+.history li { font-size: 13px; color: var(--muted); padding: 2px 0; }
+
+.table-wrap { overflow-x: auto; }
+.team-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.team-table th, .team-table td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.team-table tr.inactive td { color: var(--muted); }
+.team-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+.view:not([hidden]) { animation: fade 0.2s ease-out; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .login-card, .view:not([hidden]) { animation: none; }
+}

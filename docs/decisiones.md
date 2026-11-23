@@ -12,7 +12,7 @@ La pauta pide registrar las decisiones en **Issues**. Esta lista es la fuente (a
 | 6 | Crédito usado = pedidos **confirmados + despachados** | Lo facturado pasa a cuentas por cobrar (otro módulo) | Contar también cotizaciones: bloquea ventas que no existen | D5 |
 | 7 | Descuento > 10 % requiere **aprobación** (tabla `discount_approvals`) | Evita la suboptimización: el vendedor maximiza ventas regalando margen | Bloquear todo descuento alto: frena negocios legítimos | D6 |
 | 8 | Motivo **obligatorio** al perder una cotización (`lost_reasons`) | Sin motivo, solo vemos ventas ganadas (sesgo de supervivencia) | Campo libre opcional: casi nadie lo llena | D7 |
-| 9 | Perfiles simulados vendedor / jefe | Mostrar permisos (margen oculto, aprobar) sin construir inicio de sesión | Login real: fuera del alcance de un frontend | D8 |
+| 9 | Perfiles simulados vendedor / jefe (reemplazada en la iteración 3 por el inicio de sesión, issue #31) | Mostrar permisos (margen oculto, aprobar) sin construir inicio de sesión | Login real: fuera del alcance de un frontend | D8 → D8b |
 | 10 | Pronóstico por **mínimos cuadrados + promedio móvil**, sin el mes en curso | Es explicable en 1 minuto; el mes incompleto deformaba la tendencia | Modelos más complejos: pocos datos, difíciles de explicar | D9 |
 | 11 | RUT con dígito verificador (módulo 11), obligatorio y único | Evita clientes duplicados y errores de tipeo | Texto libre | D10 |
 | 12 | El límite de crédito lo fija la jefatura según el historial de pago, nunca por comuna u otros atributos personales | Principio V de la constitución; evita discriminar | Puntaje por ubicación | [riesgos](riesgos-y-sesgos.md) |

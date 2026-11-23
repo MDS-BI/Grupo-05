@@ -4,8 +4,10 @@
 import { getConfig, labelFor, grammar } from '../module-config.js';
 import {
   loadEntities, loadDocuments, addDocument, updateDocument, deleteDocument, validateDocument,
-  allowedNextStatuses, documentNumber, findEntityByEntityId, nextFolio, latestApproval, requestApproval
+  allowedNextStatuses, documentNumber, findEntityByEntityId, nextFolio, latestApproval, requestApproval,
+  canEditDocument, statusHistory
 } from '../storage.js';
+import { currentUser, authEnabled, sellerNames } from '../auth.js';
 import { computeLine, computeTotals, maxDiscountPct, requiresApproval, creditCheck } from '../sales/sales-logic.js';
 import { renderCustomFields, readCustomFields, fillCustomFields, isCustomKey } from './custom-fields.js';
 import { flash } from './shell.js';
@@ -36,6 +38,12 @@ export function initDocumentForm({ onDataChanged }){
       renderLines();
     });
     $('document-entity').addEventListener('change', updateSalesInfo);
+  }
+
+  if(sales){
+    $('document-filters').hidden = false;
+    $('filter-status').addEventListener('change', () => refreshDocumentSelectors($('edit-document').value));
+    $('filter-seller').addEventListener('change', () => refreshDocumentSelectors($('edit-document').value));
   }
 
   $('document-form').addEventListener('submit', (ev) => {
@@ -85,21 +93,128 @@ export function refreshDocumentSelectors(selectedDocId = ''){
 
   const names = Object.fromEntries(entities.map(e => [e.entity_id, e.name]));
   const docSel = $('edit-document');
-  const docs = loadDocuments();
+  const docs = filteredDocuments();
   docSel.innerHTML = '';
   const dph = document.createElement('option');
   dph.value = '';
   dph.textContent = docs.length ? `— Selecciona para editar (${docs.length}) —` : '— No hay registros —';
   docSel.append(dph);
+  const me = currentUser();
   for(const d of docs){
     const o = document.createElement('option');
     o.value = d.id;
     const status = d.status ? ` · ${d.status}` : '';
-    o.textContent = `${documentNumber(d)} · ${names[d.entity_id] ?? '?'}${status}`;
+    const seller = getConfig().sales && d.vendedor ? ` · ${d.vendedor}` : '';
+    o.textContent = `${documentNumber(d)} · ${names[d.entity_id] ?? '?'}${status}${seller}`;
+    if(me && me.role === 'vendedor' && d.vendedor && d.vendedor !== me.name) o.textContent += ' (solo lectura)';
     docSel.append(o);
+  }
+  if(selectedDocId && !docs.some(d => d.id === selectedDocId)){
+    // El pedido abierto no calza con el filtro: se agrega igual para no perderlo de vista.
+    const d = loadDocuments().find(x => x.id === selectedDocId);
+    if(d){
+      const o = document.createElement('option');
+      o.value = d.id;
+      o.textContent = `${documentNumber(d)} · ${names[d.entity_id] ?? '?'} · ${d.status}`;
+      docSel.append(o);
+    }
   }
   docSel.value = selectedDocId;
   syncDeleteButton(docs.find(d => d.id === docSel.value));
+}
+
+/** Filtros por estado y vendedor (M-06). Un vendedor/a ve primero sus pedidos (US-16). */
+function filteredDocuments(){
+  const sales = getConfig().sales;
+  let docs = loadDocuments();
+  if(!sales) return docs;
+  syncFilterOptions();
+  const st = $('filter-status').value;
+  const se = $('filter-seller').value;
+  if(st) docs = docs.filter(d => d.status === st);
+  if(se) docs = docs.filter(d => d.vendedor === se);
+  const me = currentUser();
+  if(me && me.role === 'vendedor'){
+    docs = [...docs].sort((a, b) => Number(b.vendedor === me.name) - Number(a.vendedor === me.name));
+  }
+  return docs;
+}
+
+function syncFilterOptions(){
+  const fill = (sel, values, allLabel) => {
+    const keep = sel.value;
+    sel.innerHTML = '';
+    const all = document.createElement('option');
+    all.value = '';
+    all.textContent = allLabel;
+    sel.append(all);
+    for(const v of values){
+      const o = document.createElement('option');
+      o.value = v;
+      o.textContent = v;
+      sel.append(o);
+    }
+    sel.value = values.includes(keep) ? keep : '';
+  };
+  fill($('filter-status'), getConfig().statusLifecycle?.statuses || [], 'Todos');
+  fill($('filter-seller'), sellerNames(), 'Todos');
+}
+
+/** Opciones del campo Vendedor: las del perfil más las cuentas creadas por el jefe/a (US-17). */
+export function syncSellerOptions(){
+  const names = sellerNames();
+  for(const key of ['vendedor', 'ejecutivo']){
+    const f = getConfig().customFields.find(c => c.key === key);
+    if(!f) continue;
+    f.options = names;
+    const sel = $(`cf-${key}`);
+    if(!sel) continue;
+    const keep = sel.value;
+    sel.querySelectorAll('option:not([value=""])').forEach(o => o.remove());
+    for(const n of names){
+      const o = document.createElement('option');
+      o.value = n;
+      o.textContent = n;
+      sel.append(o);
+    }
+    sel.value = keep;
+  }
+}
+
+/** US-16: el campo Vendedor se llena solo con quien tiene la sesión y no se cambia. */
+function applySellerLock(doc){
+  const sel = $('cf-vendedor');
+  const me = currentUser();
+  if(!sel || !getConfig().sales || !authEnabled()) return;
+  const isSeller = me && me.role === 'vendedor';
+  if(isSeller && !doc) sel.value = me.name;
+  sel.disabled = Boolean(isSeller);
+  sel.title = isSeller ? 'Se llena con tu nombre: es la cuenta con la que entraste.' : '';
+}
+
+function applyReadOnly(doc){
+  const note = $('document-readonly');
+  const editable = canEditDocument(doc);
+  $('document-submit-button').disabled = !editable;
+  note.hidden = editable;
+  note.textContent = editable ? '' : `Este pedido es de ${doc.vendedor}. Puedes mirarlo, pero solo su vendedor/a o el jefe/a lo pueden modificar.`;
+  if(!editable) $('delete-document').disabled = true;
+}
+
+function renderHistory(doc){
+  const box = $('status-history');
+  const list = $('status-history-list');
+  list.innerHTML = '';
+  const items = doc && getConfig().sales ? statusHistory(doc.id) : [];
+  box.hidden = items.length === 0;
+  for(const h of items){
+    const li = document.createElement('li');
+    const when = h.changed_at.slice(0, 16).replace('T', ' ');
+    li.textContent = h.from_status
+      ? `${when} · ${h.changed_by} cambió de "${h.from_status}" a "${h.to_status}"`
+      : `${when} · ${h.changed_by} lo creó como "${h.to_status}"`;
+    list.append(li);
+  }
 }
 
 /** En Ventas solo se borran documentos abiertos; el botón se desactiva para el resto (la regla vive en storage). */
@@ -259,7 +374,7 @@ function updateSalesInfo(){
     if(a && a.discount_pct >= pct){
       if(a.decision === 'aprobado') state = `Aprobado por ${a.approved_by || 'jefatura'}.`;
       else if(a.decision === 'pendiente') state = 'Solicitud pendiente de aprobación.';
-      else state = 'La última solicitud fue rechazada: baja el descuento o solicita de nuevo.';
+      else state = `${a.approved_by || 'El jefe/a'} rechazó la solicitud${a.decision_comment ? `: "${a.decision_comment}"` : ''}. Baja el descuento o solicita de nuevo con otro motivo.`;
     }
     box.textContent = `Descuento máximo ${pct} % (tope sin aprobación: ${sales.discountApprovalThreshold} %). ${state}`;
     box.hidden = false;
@@ -322,6 +437,9 @@ export function resetDocumentForm(){
     lines = [emptyLine()];
     renderLines();
     setLinesLocked(false);
+    applySellerLock(null);
+    applyReadOnly(null);
+    renderHistory(null);
   }
 }
 
@@ -343,7 +461,13 @@ export function populateDocumentForm(doc){
     lines = (doc.lines || []).map(l => ({ ...l }));
     if(lines.length === 0) lines = [emptyLine()];
     renderLines();
-    setLinesLocked(!sales.openStatuses.includes(doc.status));
+    setLinesLocked(!sales.openStatuses.includes(doc.status) || !canEditDocument(doc));
+    applySellerLock(doc);
+    applyReadOnly(doc);
+    renderHistory(doc);
+    const a = latestApproval(doc.id);
+    if(a) $('approval-reason').value = a.reason || '';
+    updateSalesInfo();
   }
 }
 
@@ -356,6 +480,7 @@ function setLinesLocked(locked){
 }
 
 function readForm(){
+  const sellerSel = $('cf-vendedor');
   const data = {
     entityId: $('document-entity').value,
     series: $('series').value,
@@ -368,6 +493,7 @@ function readForm(){
     status: $('status').value,
     ...readCustomFields('document')
   };
+  if(sellerSel && sellerSel.disabled && currentUser()?.role === 'vendedor' && !$('document-id').value) data.vendedor = currentUser().name;
   for(const k of AMOUNT_INPUTS) data[k] = $(k).value;
   if(getConfig().sales){
     data.lines = lines.map(l => ({ ...l, quantity: Number(l.quantity), unitPrice: Number(l.unitPrice), discountPct: Number(l.discountPct) || 0 }));
