@@ -13,6 +13,8 @@ import { money, today, addDays } from './format.js';
 
 const $ = (id) => document.getElementById(id);
 const AMOUNT_INPUTS = ['quantity', 'subtotal', 'discount', 'taxAmount', 'totalAmount'];
+/** Montos que en Ventas se muestran con formato de pesos (M-01). Lo que se guarda sigue siendo un número. */
+const MONEY_INPUTS = ['subtotal', 'discount', 'taxAmount', 'totalAmount'];
 
 let onChange = () => {};
 let lines = [];
@@ -26,6 +28,8 @@ export function initDocumentForm({ onDataChanged }){
   $('sales-lines').hidden = !sales;
   if(sales){
     for(const k of AMOUNT_INPUTS){ $(k).readOnly = true; $(k).classList.add('computed'); }
+    // Un campo numérico no acepta "$183.280": en Ventas los montos son de texto y solo se leen (M-01).
+    for(const k of MONEY_INPUTS) $(k).type = 'text';
     $('add-line').addEventListener('click', () => { lines.push(emptyLine()); renderLines(); });
     $('lines-body').addEventListener('input', onLineInput);
     $('lines-body').addEventListener('change', onLineInput);
@@ -239,10 +243,7 @@ function updateTotals(){
   if(!sales) return;
   const t = computeTotals(lines, sales.taxRate);
   $('quantity').value = t.quantity || '';
-  $('subtotal').value = t.subtotal;
-  $('discount').value = t.discount;
-  $('taxAmount').value = t.taxAmount;
-  $('totalAmount').value = t.totalAmount;
+  for(const k of MONEY_INPUTS) $(k).value = money(t[k]);
   updateSalesInfo();
 }
 
@@ -350,6 +351,9 @@ export function populateDocumentForm(doc){
 /** Un documento que ya no es cotización ni enviada no cambia sus productos: solo avanza de estado. */
 function setLinesLocked(locked){
   $('lines-body').querySelectorAll('input, select, button').forEach(el => { el.disabled = locked; });
+  // M-02: que se note que está cerrado. Los campos se ven en gris (styles.css) y la ✕ desaparece.
+  $('lines-body').querySelectorAll('[data-remove]').forEach(el => { el.hidden = locked; });
+  $('lines-body').closest('table')?.classList.toggle('locked', locked);
   $('add-line').hidden = locked;
   const note = $('lines-locked');
   if(note) note.hidden = !locked;
@@ -371,6 +375,9 @@ function readForm(){
   for(const k of AMOUNT_INPUTS) data[k] = $(k).value;
   if(getConfig().sales){
     data.lines = lines.map(l => ({ ...l, quantity: Number(l.quantity), unitPrice: Number(l.unitPrice), discountPct: Number(l.discountPct) || 0 }));
+    // Los montos se calculan desde las líneas como número, no desde el texto con formato de pesos (M-01).
+    const t = computeTotals(data.lines, getConfig().sales.taxRate);
+    for(const k of AMOUNT_INPUTS) data[k] = t[k];
     data.paymentTerms = data.paymentTerms || findEntityByEntityId(data.entityId)?.paymentTerms || '';
   }
   return data;

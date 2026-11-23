@@ -134,6 +134,11 @@ legend { font-weight: 600; padding: 0 6px; }
 .lines-table td { padding: 4px; vertical-align: middle; }
 .lines-table td:first-child { min-width: 240px; }
 .lines-table input { min-width: 80px; }
+/* M-02: en un documento cerrado los campos de las líneas se ven en gris, no como editables. */
+input:disabled, select:disabled, textarea:disabled,
+.lines-table.locked input, .lines-table.locked select {
+  background: var(--bg); color: var(--muted); border-style: dashed; cursor: not-allowed;
+}
 .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .actions { display: flex; gap: 10px; margin-top: 16px; }
